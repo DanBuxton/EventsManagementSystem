@@ -15,7 +15,7 @@ namespace EventsManagementSystem
         public string CustomerName { get; private set; }
         public string CustomerAddress { get; private set; }
         public int NumberOfTicketsToBuy { get; private set; }
-        public DateTime DateAdded { get; private set; }
+        public DateTime DateAdded { get; private set; } = DateTime.Now;
 
         private double pricePerTicket = 15.35;
 
@@ -29,8 +29,6 @@ namespace EventsManagementSystem
             CustomerName = customerName;
             CustomerAddress = customerAddress;
             NumberOfTicketsToBuy = numberOfTicketsToBuy;
-
-            DateAdded = DateTime.Now;
         }
     }
 }
