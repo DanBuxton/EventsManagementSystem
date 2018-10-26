@@ -16,11 +16,14 @@ namespace EventsManagementSystem.Models
 
         public DateTime DateAdded { get; private set; } = DateTime.Now;
 
-        public Event()
+        public Event(string name, int numberOfTickets)
         {
             //Id's
             _PrevEventCode++;
             EventCode = _PrevEventCode;
+
+            Name = name;
+            NumberOfTickets = numberOfTickets;
         }
     }
 }

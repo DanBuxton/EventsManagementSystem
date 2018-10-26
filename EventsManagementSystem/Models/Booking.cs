@@ -16,15 +16,18 @@ namespace EventsManagementSystem.Models
         public string CustomerAddress { get; private set; }
         public int NumberOfTicketsToBuy { get; private set; }
         public DateTime DateAdded { get; private set; } = DateTime.Now;
+        public double TotalPriceOfTickets { get { return Event.PricePerTicket * NumberOfTicketsToBuy; } }
 
-        private double pricePerTicket = 15.35;
+        public Event Event { get; set; }
 
-        public Booking(int eventCode, string customerName, string customerAddress, int numberOfTicketsToBuy = 1)
+        private double PricePerTicket = 15.35;
+
+        public Booking(Event _event, string customerName, string customerAddress, int numberOfTicketsToBuy = 1)
         {
             //Id's
             _PrevBookingCode++;
             BookingCode = _PrevBookingCode;
-            EventCode = eventCode;
+            EventCode = _event.EventCode;
 
             CustomerName = customerName;
             CustomerAddress = customerAddress;

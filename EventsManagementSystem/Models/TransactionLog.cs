@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystem.Models
 {
-    public class Transaction
+    public class TransactionLog
     {
-        public enum TransactionType
+        public int TransactionId { get; set; }
+
+        public enum TransType
         {
             Add=0,
             Update=1,
@@ -17,13 +19,13 @@ namespace EventsManagementSystem.Models
             Cancel=4
         }
 
-        public TransactionType Type { get; set; }
+        public TransType Type { get; set; }
 
         public DateTime dateOfTransaction { get; set; } = DateTime.Now;
 
-        public Transaction()
+        public TransactionLog(TransType transactionType)
         {
-
+            Type = transactionType;
         }
     }
 }
