@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EventsManagementSystem
+namespace EventsManagementSystem.Models
 {
     public class Event
     {
