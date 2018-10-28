@@ -8,7 +8,8 @@ namespace EventsManagementSystem.Models
 {
     public class TransactionLog
     {
-        public int TransactionId { get; set; }
+        private static int _PrevId { get; set; } = 999;
+        public int TransactionId { get; private set; } = 1000;
 
         public enum TransType
         {
@@ -19,12 +20,15 @@ namespace EventsManagementSystem.Models
             Cancel=4
         }
 
-        public TransType Type { get; set; }
+        public TransType Type { get; private set; } = TransType.Add;
 
-        public DateTime dateOfTransaction { get; set; } = DateTime.Now;
+        public DateTime DateOfTransaction { get; private set; } = DateTime.Now;
 
         public TransactionLog(TransType transactionType)
         {
+            _PrevId++;
+            TransactionId = _PrevId;
+
             Type = transactionType;
         }
     }

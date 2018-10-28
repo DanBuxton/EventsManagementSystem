@@ -17,9 +17,43 @@ namespace EventsManagementSystem
         public static void Main(string[] args)
         {
             // Event has a queue of bookings OR Booking has an event property?????
+
+        }
+
+        public void AddAnEvent()
+        {
+
+        }
+
+        public void UpdateAnEvent(Event _event)
+        {
+
+        }
+
+        public void DeleteAnEvent(Event _event)
+        {
+
+        }
+
+        public void BookTickets()
+        {
+
         }
 
         public void CancelBooking()
+        {
+
+        }
+
+        public void DisplayAllEvents()
+        {
+            foreach (Event e in Events)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        public void DisplayTransactionLog()
         {
 
         }
