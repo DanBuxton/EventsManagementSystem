@@ -8,28 +8,60 @@ namespace EventsManagementSystem.Models
 {
     public class Event
     {
-        private static int _PrevEventCode { get; set; } = 99;
-        public int EventCode { get; private set; } = 100;
-        public string Name { get; private set; } = "???";
-        public int NumberOfTickets { get; set; } = 0;
-        public double PricePerTicket { get; protected internal set; } = 5.99;
-
-        public int NumberOfTicketsAvaliable { get; protected internal set; } = 0;
-
-        public DateTime DateAdded { get; private set; } = DateTime.Now;
-
-        public Event(string name, int numberOfTickets, double pricePerTicket)
+        private int eventCode = 0;
+        public int EventCode
         {
-            //Id's
-            _PrevEventCode++;
-            EventCode = _PrevEventCode;
+            get => eventCode;
 
-            Name = name;
-            NumberOfTickets = numberOfTickets;
-            PricePerTicket = pricePerTicket;
-
-            NumberOfTicketsAvaliable = numberOfTickets;
+            set
+            {
+                if (value > 99) eventCode = value;
+            }
         }
+
+        private string name = "???";
+        public string Name
+        {
+            get => name;
+
+            set
+            {
+                if (value.Length < 40) name = value;
+            }
+        }
+
+        private int numberOfTickets = 0;
+        public int NumberOfTickets
+        {
+            get => numberOfTickets;
+
+            set
+            {
+                if (value > 0) numberOfTickets = value;
+            }
+        }
+
+        private double pricePerTicket = 5.99;
+        public double PricePerTicket
+        {
+            get => pricePerTicket;
+
+            set
+            {
+                if (value > 0) pricePerTicket = value;
+            }
+        }
+
+        private int numberOfTicketsAvaliable = 0;
+        public int NumberOfTicketsAvaliable
+        {
+            get => numberOfTicketsAvaliable;
+
+            set => numberOfTicketsAvaliable = (value > 5 ? value : 0);
+        }
+
+        private readonly DateTime dateAdded = DateTime.Now;
+        public DateTime DateAdded { get => dateAdded; }
 
         public override string ToString()
         {

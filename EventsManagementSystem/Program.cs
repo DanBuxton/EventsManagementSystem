@@ -10,19 +10,41 @@ namespace EventsManagementSystem
 {
     public class Program
     {
-        public Stack<Event> Events { get; set; } = new Stack<Event>();
+        public List<Event> Events { get; set; } = new List<Event>();
         public Queue<Booking> Bookings { get; set; } = new Queue<Booking>();
         public List<TransactionLog> Transactions { get; set; } = new List<TransactionLog>();
 
         public static void Main(string[] args)
         {
-            // Event has a queue of bookings OR Booking has an event property?????
 
         }
 
         public void AddAnEvent()
         {
+            int eCode = 0000, eNumTickets = 0;
+            double ePricePerTicket = 0;
+            string eName = "";
 
+            Console.Write("Event code (xxxx): ");
+
+
+            Event _event = new Event
+            {
+                EventCode = eCode,
+                Name = eName,
+                NumberOfTickets = eNumTickets,
+                NumberOfTicketsAvaliable = eNumTickets,
+                PricePerTicket = ePricePerTicket
+            };
+
+            Events.Add(_event);
+
+            Transactions.Add(
+                new TransactionLog
+                {
+                    Action = TransactionLog.TransType.Add
+                }
+            );
         }
 
         public void UpdateAnEvent(Event _event)
@@ -32,7 +54,26 @@ namespace EventsManagementSystem
 
         public void DeleteAnEvent(Event _event)
         {
+            if (Events.First(e => e.EventCode == _event.EventCode) != null)
+            {
+                Events.Remove(_event);
 
+                Transactions.Add(
+                    new TransactionLog
+                    {
+                        Action = TransactionLog.TransType.Delete
+                    }
+                );
+            }
+        }
+
+        private Event FindAnEvent(int id)
+        {
+            Event e = null;
+
+
+
+            return e;
         }
 
         public void BookTickets()
