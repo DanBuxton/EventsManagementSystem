@@ -57,7 +57,7 @@ namespace EventsManagementSystem.Models
         {
             get => numberOfTicketsAvaliable;
 
-            set => numberOfTicketsAvaliable = (value > 5 ? value : 0);
+            set => numberOfTicketsAvaliable = (value >= 0 ? value : 0);
         }
 
         private readonly DateTime dateAdded = DateTime.Now;
@@ -65,7 +65,7 @@ namespace EventsManagementSystem.Models
 
         public override string ToString()
         {
-            return $"Code: {EventCode} : ";
+            return $"({EventCode}) {Name} {NumberOfTicketsAvaliable}";
         }
     }
 }

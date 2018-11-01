@@ -30,6 +30,13 @@ namespace EventsManagementSystem.Models
 
         public TransType Action { get; set; } = TransType.Add;
 
+        #region TransactionType
+        public Event _eventDetails { get; set; }
+
+        public int BookingCode { get; set; } = 1000;
+        public int NumberOfTickes { get; set; } = 0;
+        #endregion
+
         public DateTime DateOfTtansaction { get; } = DateTime.Now;
     }
 }
