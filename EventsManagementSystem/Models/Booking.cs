@@ -34,8 +34,7 @@ namespace EventsManagementSystem.Models
             }
         }
         public double Price { get { return numberOfTicketsToBuy * pricePerTicket; } }
-
-        private DateTime dateAdded = DateTime.Now;
-        public DateTime DateAdded { get => dateAdded; }
+        
+        public DateTime DateAdded { get; } = DateTime.Now;
     }
 }

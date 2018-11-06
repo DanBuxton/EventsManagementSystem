@@ -77,22 +77,18 @@ namespace EventsManagementSystem
         {
             int eCode = -1;
 
-            bool flag;
+            Console.Write($"{str} code (xxxx): ");
+            int.TryParse(Console.ReadLine(), out eCode);
 
-            do
+            while ((eCode < 1000) || (eCode > 10000))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Must be a number 4-digits long");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
                 Console.Write($"{str} code (xxxx): ");
                 int.TryParse(Console.ReadLine(), out eCode);
-
-                flag = (eCode < 1000) || (eCode > 10000);
-
-                if (flag)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Must be a number 4-digits long");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-            } while (flag);
+            }
 
             id = eCode;
         }
@@ -103,46 +99,39 @@ namespace EventsManagementSystem
         }
         private static void ReadNumberOfTickets(out int num)
         {
-            bool flag;
+            // 17
             int eNumTickets = -1;
 
-            do
+            Console.Write("Number of tickets: ");
+            int.TryParse(Console.ReadLine(), out eNumTickets);
+
+            while (eNumTickets < 1)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Must be greater than 0");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
                 Console.Write("Number of tickets: ");
                 int.TryParse(Console.ReadLine(), out eNumTickets);
-
-                flag = (eNumTickets < 1);
-
-                if (flag)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Must be greater than 0");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-            } while (flag);
+            }
 
             num = eNumTickets;
         }
         private static void ReadPricePerTicket(out double price)
         {
-            bool flag;
-            double ePricePerTicket = 0;
+            // 18
+            Console.Write("Price of ticket: ");
+            double.TryParse(Console.ReadLine(), out double ePricePerTicket);
 
-            do
+            while (ePricePerTicket <= 0)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Must be greater than 0");
+                Console.ForegroundColor = ConsoleColor.Gray;
 
                 Console.Write("Price of ticket: ");
                 double.TryParse(Console.ReadLine(), out ePricePerTicket);
-
-                flag = (ePricePerTicket <= 0);
-
-                if (flag)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Must be greater than 0");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-            } while (flag);
+            }
 
             price = ePricePerTicket;
         }
@@ -188,24 +177,23 @@ namespace EventsManagementSystem
                 ReadNumberOfTickets(out int eNumTickets);
                 ReadPricePerTicket(out double ePricePerTicket);
 
-                Event upEvent = new Event
+
+                e.Name = eName;
+                e.NumberOfTickets = eNumTickets;
+                e.NumberOfTicketsAvaliable = eNumTickets;
+                e.PricePerTicket = ePricePerTicket;
+
+                Booking[] bookings = BookingsForEvent(e.EventCode);
+                for (int i = 0; i < bookings.Length; i++)
                 {
-                    EventCode = eCode,
-                    Name = eName,
-                    NumberOfTickets = eNumTickets,
-                    NumberOfTicketsAvaliable = eNumTickets,
-                    PricePerTicket = ePricePerTicket
-                };
-
-                Events.Remove(e);
-
-                Events.Add(upEvent);
+                    // Alter number of tickets
+                }
 
                 Transactions.Add(
                     new TransactionLog
                     {
                         Action = TransactionLog.Type.Update,
-                        _eventDetails = upEvent
+                        _eventDetails = e
                     }
                 );
             }
@@ -283,22 +271,16 @@ namespace EventsManagementSystem
             Console.Write("Customer address: ");
             string cAddress = Console.ReadLine();
 
-            int numOfTickets;
-            bool flag;
+            ReadNumberOfTickets(out int numOfTickets);
 
-            do
+            while (numOfTickets > e.NumberOfTicketsAvaliable)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"There are only {e.NumberOfTicketsAvaliable} ticket{(e.NumberOfTicketsAvaliable > 1 ? "s" : "")} remaining");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
                 ReadNumberOfTickets(out numOfTickets);
-
-                flag = numOfTickets > e.NumberOfTicketsAvaliable;
-
-                if (flag)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"There are only {e.NumberOfTicketsAvaliable} ticket{(e.NumberOfTicketsAvaliable > 1 ? "s": "")} remaining");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-            } while (flag);
+            }
 
             if (e != null)
             {
@@ -463,38 +445,35 @@ namespace EventsManagementSystem
         {
             Console.Clear();
 
-            char opt = '0';
-
-            Console.WriteLine("1\t- Add an event");
+            Console.WriteLine("\n1\t- Add an event");
             Console.WriteLine("2\t- Update an event");
-            Console.WriteLine("3\t- Delete an event");
-            Console.WriteLine();
+            Console.WriteLine("3\t- Delete an event\n");
+
             Console.WriteLine("4\t- Book tickets");
-            Console.WriteLine("5\t- Cancel booking");
-            Console.WriteLine();
-            Console.WriteLine("6\t- Display events");
-            Console.WriteLine("7\t- Display transactions");
-            Console.WriteLine();
+            Console.WriteLine("5\t- Cancel booking\n");
+
+            Console.WriteLine("6\t- Display all events");
+            Console.WriteLine("7\t- Display all transactions\n");
+
             Console.WriteLine("8\t- Exit");
 
-            bool flag;
 
-            do
+            Console.WriteLine();
+            Console.Write("choice > ");
+
+            char.TryParse(Console.ReadLine(), out char opt);
+
+            while ((opt < 48) || (opt > 57))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Only numbers are allowed!");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
                 Console.WriteLine();
                 Console.Write("choice > ");
 
                 char.TryParse(Console.ReadLine(), out opt);
-
-                flag = (opt < 49) || (opt > 56);
-
-                if (flag)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Only numbers are allowed!");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-            } while (flag);
+            }
 
             return Convert.ToInt32(opt.ToString());
         }
