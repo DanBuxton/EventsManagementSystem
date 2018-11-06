@@ -60,12 +60,11 @@ namespace EventsManagementSystem.Models
             set => numberOfTicketsAvaliable = (value >= 0 ? value : 0);
         }
 
-        private readonly DateTime dateAdded = DateTime.Now;
-        public DateTime DateAdded { get => dateAdded; }
+        public DateTime DateAdded { get; } = DateTime.Now;
 
         public override string ToString()
         {
-            return $"({EventCode}) {Name} {NumberOfTickets} ({numberOfTicketsAvaliable} left)";
+            return $"({EventCode}) {Name} {NumberOfTickets} ({numberOfTicketsAvaliable} remaining)";
         }
     }
 }

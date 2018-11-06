@@ -490,7 +490,9 @@ namespace EventsManagementSystem
 
                 if (flag)
                 {
-                    Console.WriteLine("Error!");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Only numbers are allowed!");
+                    Console.ForegroundColor = ConsoleColor.Gray;
                 }
             } while (flag);
 
