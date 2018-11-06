@@ -19,7 +19,7 @@ namespace EventsManagementSystem.Models
         //    }
         //}
 
-        public enum TransType
+        public enum Type
         {
             Add = 0,
             Update = 1,
@@ -28,15 +28,16 @@ namespace EventsManagementSystem.Models
             Cancel = 4
         }
 
-        public TransType Action { get; set; } = TransType.Add;
+        public Type Action { get; set; } = Type.Add;
 
         #region TransactionType
         public Event _eventDetails { get; set; }
+        public int EventCode { get; set; }
 
-        public int BookingCode { get; set; } = 1000;
-        public int NumberOfTickes { get; set; } = 0;
+        public BookType BookType { get; set; }
+        public CancelType CancelType { get; set; }
         #endregion
 
-        public DateTime DateOfTtansaction { get; } = DateTime.Now;
+        public DateTime DateOfTransaction { get; } = DateTime.Now;
     }
 }

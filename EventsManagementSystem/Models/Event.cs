@@ -65,7 +65,7 @@ namespace EventsManagementSystem.Models
 
         public override string ToString()
         {
-            return $"({EventCode}) {Name} {NumberOfTicketsAvaliable}";
+            return $"({EventCode}) {Name} {NumberOfTickets} ({numberOfTicketsAvaliable} left)";
         }
     }
 }
