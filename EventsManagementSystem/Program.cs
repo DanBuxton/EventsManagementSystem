@@ -73,7 +73,7 @@ namespace EventsManagementSystem
         }
 
         #region Read Input
-        private static void ReadCode(string str, out int id)
+        private static void ReadCode(string str, out int id, int len = 10)
         {
             int eCode = -1;
 
@@ -92,10 +92,20 @@ namespace EventsManagementSystem
 
             id = eCode;
         }
-        private static void ReadName(string str, out string name)
+        private static void ReadName(string str, out string name, int len = 10)
         {
             Console.Write($"{str} name: ");
             name = Console.ReadLine();
+
+            while (name.Length > len)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Must be a number 4-digits long");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
+                Console.Write($"{str} name: ");
+                name = Console.ReadLine();
+            }
         }
         private static void ReadNumberOfTickets(out int num)
         {
@@ -141,7 +151,7 @@ namespace EventsManagementSystem
         public static void AddAnEvent()
         {
             ReadCode("Event", out int eCode);
-            ReadName("Event", out string eName);
+            ReadName(str: "Event", len: 10, name: out string eName);
             ReadNumberOfTickets(out int eNumTickets);
             ReadPricePerTicket(out double ePricePerTicket);
 
@@ -173,7 +183,7 @@ namespace EventsManagementSystem
 
             if (e != null)
             {
-                ReadName("Event", out string eName);
+                ReadName(str: "Event", len: 10, name: out string eName);
                 ReadNumberOfTickets(out int eNumTickets);
                 ReadPricePerTicket(out double ePricePerTicket);
 
@@ -241,6 +251,21 @@ namespace EventsManagementSystem
                 }
             }
         }
+        private static void FindAnEvent(out Event e)
+        {
+            e = null;
+
+            ReadCode("Event", out int eCode);
+
+            foreach (var ev in Events)
+            {
+                if (ev.EventCode == eCode)
+                {
+                    e = ev;
+                    break;
+                }
+            }
+        }
         private static Event FindAnEvent(int id)
         {
             Event e = null;
@@ -261,36 +286,33 @@ namespace EventsManagementSystem
         public static void BookTickets()
         {
             ReadCode("Booking", out int bCode);
+            //ReadCode("Event", out int eCode);
 
-            ReadCode("Event", out int eCode);
-
-            FindAnEvent(eCode, out Event e);
-
-            ReadName("Customer", out string cName);
+            ReadName(str: "Customer", len: 10, name: out string cName);
 
             Console.Write("Customer address: ");
             string cAddress = Console.ReadLine();
 
             ReadNumberOfTickets(out int numOfTickets);
-
-            while (numOfTickets > e.NumberOfTicketsAvaliable)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"There are only {e.NumberOfTicketsAvaliable} ticket{(e.NumberOfTicketsAvaliable > 1 ? "s" : "")} remaining");
-                Console.ForegroundColor = ConsoleColor.Gray;
-
-                ReadNumberOfTickets(out numOfTickets);
-            }
+            FindAnEvent(out Event e);
 
             if (e != null)
             {
-                // TODO: Validate
+                while (numOfTickets > e.NumberOfTicketsAvaliable)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"There is only {e.NumberOfTicketsAvaliable} ticket{(e.NumberOfTicketsAvaliable > 1 ? "s" : "")} remaining");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+
+                    ReadNumberOfTickets(out numOfTickets);
+                }
+
                 e.NumberOfTicketsAvaliable -= numOfTickets;
 
                 Booking b = new Booking
                 {
                     BookingCode = bCode,
-                    EventCode = eCode,
+                    EventCode = e.EventCode,
                     CustomerName = cName,
                     CustomerAddress = cAddress,
                     NumberOfTicketsToBuy = numOfTickets,
@@ -303,9 +325,13 @@ namespace EventsManagementSystem
                     new TransactionLog
                     {
                         Action = TransactionLog.Type.Book,
-                        BookType = new BookType { EventCode = eCode, BookingCode = bCode, NumOfTickets = numOfTickets }
+                        BookType = new BookType { EventCode = e.EventCode, BookingCode = bCode, NumOfTickets = numOfTickets }
                     }
                 );
+            }
+            else
+            {
+
             }
         }
 
