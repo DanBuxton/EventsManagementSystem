@@ -12,8 +12,9 @@ namespace EventsManagementSystem
     public class Program
     {
         public static List<Event> Events { get; set; } = new List<Event>();
-        public static List<Booking> Bookings { get; set; } = new List<Booking>();
+        public static BookingLinkedListNode Bookings { get; set; } = null;
         public static List<TransactionLog> Transactions { get; set; } = new List<TransactionLog>();
+        //public static TransactionLinkedListNode Transactions { get; set; } = null;
 
         public static void Main(string[] args)
         {
@@ -177,9 +178,7 @@ namespace EventsManagementSystem
 
         public static void UpdateAnEvent()
         {
-            ReadCode("Event", out int eCode);
-
-            FindAnEvent(eCode, out Event e);
+            FindAnEvent(out Event e);
 
             if (e != null)
             {
@@ -187,11 +186,14 @@ namespace EventsManagementSystem
                 ReadNumberOfTickets(out int eNumTickets);
                 ReadPricePerTicket(out double ePricePerTicket);
 
-
-                e.Name = eName;
-                e.NumberOfTickets = eNumTickets;
-                e.NumberOfTicketsAvaliable = eNumTickets;
-                e.PricePerTicket = ePricePerTicket;
+                Event ev = new Event
+                {
+                    EventCode = e.EventCode,
+                    Name = eName,
+                    NumberOfTickets = eNumTickets,
+                    NumberOfTicketsAvaliable = eNumTickets,
+                    PricePerTicket = ePricePerTicket
+                };
 
                 Booking[] bookings = BookingsForEvent(e.EventCode);
                 for (int i = 0; i < bookings.Length; i++)
@@ -215,20 +217,18 @@ namespace EventsManagementSystem
 
         public static void DeleteAnEvent()
         {
-            ReadCode("Event", out int eCode);
+            FindAnEvent(out Event e);
 
-            Event _event = FindAnEvent(eCode);
-
-            if (_event != null)
+            if (e != null)
             {
                 // Remove event
-                Events.Remove(_event);
+                Events.Remove(e);
 
                 Transactions.Add(
                     new TransactionLog
                     {
                         Action = TransactionLog.Type.Delete,
-                        EventCode = eCode
+                        EventCode = e.EventCode
                     }
                 );
             }
@@ -319,7 +319,12 @@ namespace EventsManagementSystem
                     PricePerTicket = e.PricePerTicket
                 };
 
-                Bookings.Add(b);
+                AddBooking(
+                    new BookingLinkedListNode
+                    {
+                        Data = b
+                    }
+                );
 
                 Transactions.Add(
                     new TransactionLog
@@ -347,7 +352,7 @@ namespace EventsManagementSystem
 
                 e.NumberOfTicketsAvaliable += b.NumberOfTicketsToBuy;
 
-                Bookings.Remove(b);
+                //Bookings.Remove(b);
 
                 Transactions.Add(new TransactionLog
                 {
@@ -362,7 +367,16 @@ namespace EventsManagementSystem
         {
             try
             {
-                return Bookings.Where(b => b.BookingCode == bookingCode).ToArray()[0];
+                BookingLinkedListNode current = Bookings;
+
+                while (current != null && current.Data.BookingCode != bookingCode)
+                {
+                    current = current.NextNode;
+                }
+
+                return (current.Data.BookingCode == bookingCode ? current.Data : null);
+
+                //return Bookings.Where(b => b.BookingCode == bookingCode).ToArray()[0];
             }
             catch (Exception)
             {
@@ -373,7 +387,16 @@ namespace EventsManagementSystem
         {
             try
             {
-                booking = Bookings.Where(b => b.BookingCode == bookingCode).ToArray()[0];
+                BookingLinkedListNode current = Bookings;
+
+                while (current != null && current.Data.BookingCode != bookingCode)
+                {
+                    current = current.NextNode;
+                }
+
+                booking = (current.Data.BookingCode == bookingCode ? current.Data : null);
+
+                //booking = Bookings.Where(b => b.BookingCode == bookingCode).ToArray()[0];
             }
             catch (Exception)
             {
@@ -383,7 +406,23 @@ namespace EventsManagementSystem
 
         private static Booking[] BookingsForEvent(int id)
         {
-            return Bookings?.Where(b => b.EventCode == id).ToArray();
+            List<Booking> bookings = new List<Booking>();
+
+            BookingLinkedListNode current = Bookings;
+
+            while (current != null)
+            {
+                if (current.Data.EventCode == id)
+                {
+                    bookings.Add(current.Data);
+                }
+
+                current = current.NextNode;
+            }
+
+            return bookings.ToArray();
+
+            //return Bookings?.Where(b => b.EventCode == id).ToArray();
         }
         #endregion
 
@@ -432,6 +471,35 @@ namespace EventsManagementSystem
         public static void DisplayTransactions()
         {
             Console.WriteLine();
+
+            //TransactionLinkedListNode current = Transactions;
+
+            //while (current != null)
+            //{
+            //    Console.WriteLine("Date:\t" + current.Data.DateOfTransaction);
+            //    Console.WriteLine("Type:\t" + current.Data.Action);
+
+            //    switch (current.Data.Action)
+            //    {
+            //        case TransactionLog.Type.Add:
+            //            Console.WriteLine(current.Data._eventDetails);
+            //            break;
+            //        case TransactionLog.Type.Update:
+            //            Console.WriteLine(current.Data._eventDetails);
+            //            break;
+            //        case TransactionLog.Type.Delete:
+            //            Console.WriteLine(current.Data.EventCode);
+            //            break;
+            //        case TransactionLog.Type.Book:
+            //            Console.WriteLine(current.Data.BookType);
+            //            break;
+            //        case TransactionLog.Type.Cancel:
+            //            Console.WriteLine(current.Data.CancelType);
+            //            break;
+            //    }
+
+            //    current = current.NextNode;
+            //}
 
             if (Transactions.Count > 0)
             {
@@ -502,6 +570,35 @@ namespace EventsManagementSystem
             }
 
             return Convert.ToInt32(opt.ToString());
+        }
+
+        public static void AddBooking(BookingLinkedListNode newBooking)
+        {
+            BookingLinkedListNode current = Bookings;
+            BookingLinkedListNode prev = current;
+
+            while (current != null && current.Data.DateAdded < newBooking.Data.DateAdded)
+            {
+                prev = current;
+                current = prev.NextNode;
+            }
+
+            if (current == prev)
+            {
+                // New head
+                newBooking.NextNode = Bookings;
+                Bookings = newBooking;
+            }
+            else if (current == null)
+            {
+                // New tail
+                prev.NextNode = newBooking;
+            }
+            else
+            {
+                newBooking.NextNode = current;
+                prev.NextNode = newBooking;
+            }
         }
     }
 }
