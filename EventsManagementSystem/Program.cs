@@ -352,7 +352,7 @@ namespace EventsManagementSystem
 
                 e.NumberOfTicketsAvaliable += b.NumberOfTicketsToBuy;
 
-                //Bookings.Remove(b);
+                DeleteBooking(b);
 
                 Transactions.Add(new TransactionLog
                 {
@@ -598,6 +598,27 @@ namespace EventsManagementSystem
             {
                 newBooking.NextNode = current;
                 prev.NextNode = newBooking;
+            }
+        }
+        public static void DeleteBooking(Booking b)
+        {
+            BookingLinkedListNode current = Bookings;
+            BookingLinkedListNode prev = current;
+
+            while (current != null && current.Data.BookingCode != b.BookingCode)
+            {
+                prev = current;
+                current = prev.NextNode;
+            }
+
+            if (current != null)
+            {
+                // Delete head
+                Bookings = current.NextNode;
+            }
+            else
+            {
+                prev.NextNode = current.NextNode;
             }
         }
     }
