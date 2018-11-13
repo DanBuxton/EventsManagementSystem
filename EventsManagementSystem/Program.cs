@@ -41,15 +41,12 @@ namespace EventsManagementSystem
                 {
                     case ADD_EVENT:
                         AddAnEvent();
-                        DisplayAllEvents();
                         break;
                     case UPDATE_EVENT:
                         UpdateAnEvent();
-                        DisplayAllEvents();
                         break;
                     case DELETE_EVENT:
                         DeleteAnEvent();
-                        DisplayAllEvents();
                         break;
                     case BOOK_TICKET:
                         BookTickets();
@@ -57,7 +54,6 @@ namespace EventsManagementSystem
                         break;
                     case CANCEL_BOOKING:
                         CancelBooking();
-                        DisplayAllEvents();
                         break;
                     case LIST_EVENTS:
                         DisplayAllEvents();
@@ -114,7 +110,6 @@ namespace EventsManagementSystem
         }
         private static void ReadNumberOfTickets(out int num)
         {
-            // 17
             int eNumTickets = -1;
 
             Console.Write("Number of tickets: ");
@@ -134,7 +129,6 @@ namespace EventsManagementSystem
         }
         private static void ReadPricePerTicket(out double price)
         {
-            // 18
             Console.Write("Price of ticket: ");
             double.TryParse(Console.ReadLine(), out double ePricePerTicket);
 
@@ -186,19 +180,31 @@ namespace EventsManagementSystem
             FindAnEvent(eCode, out Event e);
 
             ReadName(str: "Event", name: out string eName, maxLength: 50);
-            ReadNumberOfTickets(out int eNumTickets);
+
+            int eNumTickets = -1;
+
+            Console.Write("Number of tickets to add: ");
+            int.TryParse(Console.ReadLine(), out eNumTickets);
+
+            while (eNumTickets < 1)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Must be greater than 0");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
+                Console.Write("Number of tickets: ");
+                int.TryParse(Console.ReadLine(), out eNumTickets);
+            }
+
             ReadPricePerTicket(out double ePricePerTicket);
 
             if (e != null)
             {
-                Event ev = new Event
-                {
-                    EventCode = e.EventCode,
-                    Name = eName,
-                    NumberOfTickets = eNumTickets,
-                    NumberOfTicketsAvaliable = eNumTickets,
-                    PricePerTicket = ePricePerTicket
-                };
+                e.Name = eName;
+                e.NumberOfTickets += eNumTickets;
+                e.NumberOfTicketsAvaliable += eNumTickets;
+                e.PricePerTicket = ePricePerTicket;
+                e.DateUpdated = DateTime.Now;
 
                 Booking[] bookings = BookingsForEvent(e.EventCode);
                 for (int i = 0; i < bookings.Length; i++)
@@ -465,7 +471,11 @@ namespace EventsManagementSystem
 
                         for (int b = 0; b < bookings.Length; b++)
                         {
-                            Console.WriteLine("\t\t" + bookings[b] + Environment.NewLine);
+                            Console.Write("\t\tRef: " + bookings[b].BookingCode + Environment.NewLine);
+                            Console.Write("\t\tCustomer name: " + bookings[b].CustomerName + Environment.NewLine);
+                            Console.Write("\t\t" + bookings[b].CustomerAddress + Environment.NewLine);
+                            Console.Write("\t\tNumber of tickets: " + bookings[b].NumberOfTicketsToBuy + Environment.NewLine);
+                            Console.Write("\t\tPrice: " + bookings[b].Price + Environment.NewLine);
                         }
                     }
                     else
@@ -482,13 +492,11 @@ namespace EventsManagementSystem
 
         public static void DisplayTransactions()
         {
-            Console.WriteLine();
-
             if (Transactions.Count > 0)
             {
                 for (int i = 0; i < Transactions.Count; i++)
                 {
-                    Console.WriteLine($"Date:\t{Transactions[i].DateOfTransaction}");
+                    Console.WriteLine($"\nDate:\t{Transactions[i].DateOfTransaction}");
                     Console.WriteLine($"Type:\t{Transactions[i].Action}");
 
                     switch (Transactions[i].Action)
