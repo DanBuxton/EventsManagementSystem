@@ -183,15 +183,14 @@ namespace EventsManagementSystem
         public static void UpdateAnEvent()
         {
             ReadCode("Event", out int eCode);
-
             FindAnEvent(eCode, out Event e);
+
+            ReadName(str: "Event", name: out string eName, maxLength: 50);
+            ReadNumberOfTickets(out int eNumTickets);
+            ReadPricePerTicket(out double ePricePerTicket);
 
             if (e != null)
             {
-                ReadName(str: "Event", name: out string eName, maxLength: 50);
-                ReadNumberOfTickets(out int eNumTickets);
-                ReadPricePerTicket(out double ePricePerTicket);
-
                 Event ev = new Event
                 {
                     EventCode = e.EventCode,
@@ -230,6 +229,14 @@ namespace EventsManagementSystem
             {
                 // Remove event
                 Events.Remove(e);
+
+                // Remove bookings
+
+                Booking[] books = BookingsForEvent(e.EventCode);
+                foreach (Booking b in books)
+                {
+                    DeleteBooking(b);
+                }
 
                 Transactions.Add(
                     new TransactionLog
@@ -272,7 +279,7 @@ namespace EventsManagementSystem
             ReadNumberOfTickets(out int numOfTickets);
             FindAnEvent(eCode, out Event e);
 
-            if (e != null)
+            if (e != null && e.NumberOfTicketsAvaliable > 0)
             {
                 while (numOfTickets > e.NumberOfTicketsAvaliable)
                 {
@@ -446,7 +453,7 @@ namespace EventsManagementSystem
                     Event e = Events[i];
                     Booking[] bookings = BookingsForEvent(e.EventCode);
 
-                    Console.WriteLine("Event:");
+                    Console.WriteLine("Event(s):");
                     Console.WriteLine("\t" + e);
 
                     Console.WriteLine();
@@ -536,7 +543,7 @@ namespace EventsManagementSystem
             while ((opt < 48) || (opt > 57))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Only numbers are allowed!");
+                Console.WriteLine("Only positive numbers are allowed!");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
                 Console.WriteLine();
