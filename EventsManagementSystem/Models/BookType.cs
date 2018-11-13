@@ -14,7 +14,8 @@ namespace EventsManagementSystem.Models
 
         public override string ToString()
         {
-            return $"{BookingCode} {EventCode} {NumOfTickets}";
+            //return $"{BookingCode} {EventCode} {NumOfTickets}";
+            return string.Format("Event ref: {0:d}, Booking ref: {1:d}, No. of tickets: {2:N0}", BookingCode, EventCode, NumOfTickets);
         }
     }
 }

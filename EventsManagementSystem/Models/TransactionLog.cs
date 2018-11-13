@@ -31,7 +31,7 @@ namespace EventsManagementSystem.Models
         public Type Action { get; set; } = Type.Add;
 
         #region TransactionType
-        public Event _eventDetails { get; set; }
+        public Event EventDetails { get; set; }
         public int EventCode { get; set; }
 
         public BookType BookType { get; set; }

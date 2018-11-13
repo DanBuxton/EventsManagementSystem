@@ -8,7 +8,6 @@ namespace EventsManagementSystem.Models
 {
     public class Event
     {
-        private int eventCode = 0;
         public int EventCode
         {
             get => eventCode;
@@ -18,8 +17,8 @@ namespace EventsManagementSystem.Models
                 if (value > 99) eventCode = value;
             }
         }
+        private int eventCode = 0;
 
-        private string name = "???";
         public string Name
         {
             get => name;
@@ -29,8 +28,8 @@ namespace EventsManagementSystem.Models
                 if (value.Length < 40) name = value;
             }
         }
+        private string name = "???";
 
-        private int numberOfTickets = 0;
         public int NumberOfTickets
         {
             get => numberOfTickets;
@@ -40,8 +39,8 @@ namespace EventsManagementSystem.Models
                 if (value > 0) numberOfTickets = value;
             }
         }
+        private int numberOfTickets = 0;
 
-        private double pricePerTicket = 5.99;
         public double PricePerTicket
         {
             get => pricePerTicket;
@@ -51,20 +50,22 @@ namespace EventsManagementSystem.Models
                 if (value > 0) pricePerTicket = value;
             }
         }
+        private double pricePerTicket = 5.99;
 
-        private int numberOfTicketsAvaliable = 0;
         public int NumberOfTicketsAvaliable
         {
             get => numberOfTicketsAvaliable;
 
-            set => numberOfTicketsAvaliable = (value >= 0 ? value : 0);
+            set => numberOfTicketsAvaliable = (value >= 0) && (value <= numberOfTickets) ? value : numberOfTicketsAvaliable;
         }
+        private int numberOfTicketsAvaliable = 0;
 
         public DateTime DateAdded { get; } = DateTime.Now;
 
         public override string ToString()
         {
-            return $"({EventCode}) {Name} {NumberOfTickets} ({numberOfTicketsAvaliable} remaining)";
+            return string.Format("Id: {0:d}; Name: {1:s}; Tickets: {2:N0} ticket{3:s} at {4:c}; ({5:N0} left)", EventCode,
+                Name, NumberOfTickets, (NumberOfTickets > 1 ? "s" : ""), pricePerTicket, numberOfTicketsAvaliable);
         }
     }
 }

@@ -8,22 +8,22 @@ namespace EventsManagementSystem.Models
 {
     public class Booking
     {
-        private int bookingCode = 1000;
-        public int BookingCode { get => bookingCode; set => bookingCode = (value > 999 && value < 10000 ? value : bookingCode); }
+        public int BookingCode { get; } = prevCode++;
+        //public int BookingCode { get => bookingCode; set => bookingCode = (value > 999 && value < 10000 ? value : bookingCode); }
+        private static int prevCode = 1000;
 
-        private int eventCode = 1000;
         public int EventCode { get => eventCode; set => eventCode = ((value > 999) && (value < 10000) ? value : eventCode); }
+        private int eventCode = 1000;
 
+        public string CustomerName { get => customerName; set => customerName = (value.Length >= 4 ? value : customerName); }
         private string customerName = "???";
-        public string CustomerName { get => customerName; set => customerName = (value.Length >= 10 ? value : customerName); }
 
-        private string customerAddress = "???";
         public string CustomerAddress { get => customerAddress; set => customerAddress = (value.Length >= 10 ? value : customerAddress); }
+        private string customerAddress = "???";
 
-        private int numberOfTicketsToBuy = 0;
         public int NumberOfTicketsToBuy { get => numberOfTicketsToBuy; set => numberOfTicketsToBuy = value; }
+        private int numberOfTicketsToBuy = 0;
         
-        private double pricePerTicket = 5.99;
         public double PricePerTicket
         {
             get => pricePerTicket;
@@ -33,8 +33,15 @@ namespace EventsManagementSystem.Models
                 if (value > 0) pricePerTicket = value;
             }
         }
+        private double pricePerTicket = 5.99;
+
         public double Price { get { return numberOfTicketsToBuy * pricePerTicket; } }
         
         public DateTime DateAdded { get; } = DateTime.Now;
+
+        public override string ToString()
+        {
+            return string.Format("Code: {0:d}; Name: {1:s}; Tickets: {2:N0}({3:c2})", BookingCode, customerName, numberOfTicketsToBuy, Price);
+        }
     }
 }
