@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystem.Models
 {
-    public class Event
+    public class EventDetails
     {
         public int EventCode
         {

@@ -14,7 +14,7 @@ namespace EventsManagementSystem
     {
         public static ArrayList Events { get; set; } = new ArrayList();
         public static BookingLinkedListNode Bookings { get; set; }
-        public static ArrayList Transactions { get; set; } = new ArrayList();
+        public static ArrayList TransactionLog { get; set; } = new ArrayList();
 
         public static void Main(string[] args)
         {
@@ -155,7 +155,7 @@ namespace EventsManagementSystem
             ReadNumberOfTickets(out int eNumTickets);
             ReadPricePerTicket(out double ePricePerTicket);
 
-            Event _event = new Event
+            EventDetails _event = new EventDetails
             {
                 EventCode = eCode,
                 Name = eName,
@@ -166,10 +166,10 @@ namespace EventsManagementSystem
 
             Events.Add(_event);
 
-            Transactions.Add(
-                new TransactionLog
+            TransactionLog.Add(
+                new LogDetails
                 {
-                    Action = TransactionLog.Type.Add,
+                    Action = LogDetails.Type.Add,
                     EventDetails = _event
                 }
             );
@@ -178,7 +178,7 @@ namespace EventsManagementSystem
         public static void UpdateAnEvent()
         {
             ReadCode("Event", out int eCode);
-            FindAnEvent(eCode, out Event e);
+            FindAnEvent(eCode, out EventDetails e);
 
             ReadName(str: "Event", name: out string eName, maxLength: 50);
 
@@ -207,16 +207,16 @@ namespace EventsManagementSystem
                 e.PricePerTicket = ePricePerTicket;
                 e.DateUpdated = DateTime.Now;
 
-                Booking[] bookings = BookingsForEvent(e.EventCode);
+                BookingDetails[] bookings = BookingsForEvent(e.EventCode);
                 for (int i = 0; i < bookings.Length; i++)
                 {
                     // Alter number of tickets
                 }
 
-                Transactions.Add(
-                    new TransactionLog
+                TransactionLog.Add(
+                    new LogDetails
                     {
-                        Action = TransactionLog.Type.Update,
+                        Action = LogDetails.Type.Update,
                         EventDetails = e
                     }
                 );
@@ -230,7 +230,7 @@ namespace EventsManagementSystem
         public static void DeleteAnEvent()
         {
             ReadCode("Event", out int eCode);
-            FindAnEvent(eCode, out Event e);
+            FindAnEvent(eCode, out EventDetails e);
 
             if (e != null)
             {
@@ -239,16 +239,16 @@ namespace EventsManagementSystem
 
                 // Remove bookings
 
-                Booking[] books = BookingsForEvent(e.EventCode);
-                foreach (Booking b in books)
+                BookingDetails[] books = BookingsForEvent(e.EventCode);
+                foreach (BookingDetails b in books)
                 {
                     DeleteBooking(b);
                 }
 
-                Transactions.Add(
-                    new TransactionLog
+                TransactionLog.Add(
+                    new LogDetails
                     {
-                        Action = TransactionLog.Type.Delete,
+                        Action = LogDetails.Type.Delete,
                         EventCode = e.EventCode
                     }
                 );
@@ -259,11 +259,11 @@ namespace EventsManagementSystem
             }
         }
 
-        private static void FindAnEvent(int id, out Event e)
+        private static void FindAnEvent(int id, out EventDetails e)
         {
             e = null;
 
-            foreach (Event ev in Events)
+            foreach (EventDetails ev in Events)
             {
                 if (ev.EventCode == id)
                 {
@@ -284,7 +284,7 @@ namespace EventsManagementSystem
             string cAddress = Console.ReadLine();
 
             ReadNumberOfTickets(out int numOfTickets);
-            FindAnEvent(eCode, out Event e);
+            FindAnEvent(eCode, out EventDetails e);
 
             if (e != null && e.NumberOfTicketsAvaliable > 0)
             {
@@ -299,7 +299,7 @@ namespace EventsManagementSystem
 
                 e.NumberOfTicketsAvaliable -= numOfTickets;
 
-                Booking b = new Booking
+                BookingDetails b = new BookingDetails
                 {
                     //BookingCode = bCode,
                     EventCode = e.EventCode,
@@ -316,10 +316,10 @@ namespace EventsManagementSystem
                     }
                 );
 
-                Transactions.Add(
-                    new TransactionLog
+                TransactionLog.Add(
+                    new LogDetails
                     {
-                        Action = TransactionLog.Type.Book,
+                        Action = LogDetails.Type.Book,
                         BookType = new BookType { EventCode = e.EventCode, BookingCode = b.BookingCode, NumOfTickets = numOfTickets }
                     }
                 );
@@ -335,19 +335,19 @@ namespace EventsManagementSystem
         {
             ReadCode("Booking", out int bCode);
 
-            Booking b = GetBooking(bookingCode: bCode);
+            BookingDetails b = GetBooking(bookingCode: bCode);
 
             if (b != null)
             {
-                FindAnEvent(b.EventCode, out Event e);
+                FindAnEvent(b.EventCode, out EventDetails e);
 
                 e.NumberOfTicketsAvaliable += b.NumberOfTicketsToBuy;
 
                 DeleteBooking(b);
 
-                Transactions.Add(new TransactionLog
+                TransactionLog.Add(new LogDetails
                 {
-                    Action = TransactionLog.Type.Cancel,
+                    Action = LogDetails.Type.Cancel,
                     CancelType = new CancelType { BookingCode = bCode, NumOfTickets = b.NumberOfTicketsToBuy }
                 }
                 );
@@ -385,7 +385,7 @@ namespace EventsManagementSystem
                 prev.NextNode = newBooking;
             }
         }
-        public static void DeleteBooking(Booking b)
+        public static void DeleteBooking(BookingDetails b)
         {
             BookingLinkedListNode current = Bookings, prev = current;
 
@@ -409,7 +409,7 @@ namespace EventsManagementSystem
             }
         }
 
-        private static Booking GetBooking(int bookingCode)
+        private static BookingDetails GetBooking(int bookingCode)
         {
             try
             {
@@ -428,9 +428,9 @@ namespace EventsManagementSystem
             }
         }
 
-        private static Booking[] BookingsForEvent(int id)
+        private static BookingDetails[] BookingsForEvent(int id)
         {
-            Queue<Booking> bookings = new Queue<Booking>();
+            Queue<BookingDetails> bookings = new Queue<BookingDetails>();
 
             BookingLinkedListNode current = Bookings;
 
@@ -457,8 +457,8 @@ namespace EventsManagementSystem
             {
                 for (int i = 0; i < Events.Count; i++)
                 {
-                    Event e = Events[i] as Event;
-                    Booking[] bookings = BookingsForEvent(e.EventCode);
+                    EventDetails e = Events[i] as EventDetails;
+                    BookingDetails[] bookings = BookingsForEvent(e.EventCode);
 
                     Console.WriteLine("Event(s):");
                     Console.WriteLine("\t" + e);
@@ -494,30 +494,30 @@ namespace EventsManagementSystem
 
         public static void DisplayTransactions()
         {
-            if (Transactions.Count > 0)
+            if (TransactionLog.Count > 0)
             {
-                for (int i = 0; i < Transactions.Count; i++)
+                for (int i = 0; i < TransactionLog.Count; i++)
                 {
-                    TransactionLog t = Transactions[i] as TransactionLog;
+                    LogDetails t = TransactionLog[i] as LogDetails;
 
                     Console.WriteLine($"\nDate:\t{t.DateOfTransaction}");
                     Console.WriteLine($"Type:\t{t.Action}");
 
                     switch (t.Action)
                     {
-                        case TransactionLog.Type.Add:
+                        case LogDetails.Type.Add:
                             Console.WriteLine(t.EventDetails);
                             break;
-                        case TransactionLog.Type.Update:
+                        case LogDetails.Type.Update:
                             Console.WriteLine(t.EventDetails);
                             break;
-                        case TransactionLog.Type.Delete:
+                        case LogDetails.Type.Delete:
                             Console.WriteLine(t.EventCode);
                             break;
-                        case TransactionLog.Type.Book:
+                        case LogDetails.Type.Book:
                             Console.WriteLine(t.BookType);
                             break;
-                        case TransactionLog.Type.Cancel:
+                        case LogDetails.Type.Cancel:
                             Console.WriteLine(t.CancelType);
                             break;
                     }
@@ -525,7 +525,7 @@ namespace EventsManagementSystem
             }
             else
             {
-                Console.WriteLine("No transactions");
+                Console.WriteLine("No TransactionLog");
             }
         }
         #endregion
@@ -542,10 +542,9 @@ namespace EventsManagementSystem
             Console.WriteLine("5\t- Cancel booking\n");
 
             Console.WriteLine("6\t- Display all events");
-            Console.WriteLine("7\t- Display all transactions\n");
+            Console.WriteLine("7\t- Display all TransactionLog\n");
 
             Console.WriteLine("8\t- Exit");
-
 
             Console.WriteLine();
             Console.Write("choice > ");

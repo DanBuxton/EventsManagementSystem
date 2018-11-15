@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystem.Models
 {
-    public class Booking
+    public class BookingDetails
     {
         public int BookingCode { get; } = prevCode++;
         //public int BookingCode { get => bookingCode; set => bookingCode = (value > 999 && value < 10000 ? value : bookingCode); }

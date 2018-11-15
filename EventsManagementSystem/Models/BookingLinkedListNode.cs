@@ -8,7 +8,7 @@ namespace EventsManagementSystem.Models
 {
     public class BookingLinkedListNode
     {
-        public Booking Data { get; set; } = null;
+        public BookingDetails Data { get; set; } = null;
         public BookingLinkedListNode NextNode { get; set; } = null;
     }
 }
