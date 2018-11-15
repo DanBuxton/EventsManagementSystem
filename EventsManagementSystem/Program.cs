@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,9 @@ namespace EventsManagementSystem
 {
     public class Program
     {
-        public static List<Event> Events { get; set; } = new List<Event>();
+        public static ArrayList Events { get; set; } = new ArrayList();
         public static BookingLinkedListNode Bookings { get; set; }
-        public static List<TransactionLog> Transactions { get; set; } = new List<TransactionLog>();
+        public static ArrayList Transactions { get; set; } = new ArrayList();
 
         public static void Main(string[] args)
         {
@@ -262,7 +263,7 @@ namespace EventsManagementSystem
         {
             e = null;
 
-            foreach (var ev in Events)
+            foreach (Event ev in Events)
             {
                 if (ev.EventCode == id)
                 {
@@ -456,7 +457,7 @@ namespace EventsManagementSystem
             {
                 for (int i = 0; i < Events.Count; i++)
                 {
-                    Event e = Events[i];
+                    Event e = Events[i] as Event;
                     Booking[] bookings = BookingsForEvent(e.EventCode);
 
                     Console.WriteLine("Event(s):");
@@ -467,15 +468,16 @@ namespace EventsManagementSystem
                     if ((bookings != null) && (bookings.Length > 0))
                     {
                         Console.WriteLine($"\tBookings: ({bookings.Length})");
-                        Console.WriteLine();
 
                         for (int b = 0; b < bookings.Length; b++)
                         {
+                            Console.WriteLine();
+
                             Console.Write("\t\tRef: " + bookings[b].BookingCode + Environment.NewLine);
-                            Console.Write("\t\tCustomer name: " + bookings[b].CustomerName + Environment.NewLine);
-                            Console.Write("\t\t" + bookings[b].CustomerAddress + Environment.NewLine);
-                            Console.Write("\t\tNumber of tickets: " + bookings[b].NumberOfTicketsToBuy + Environment.NewLine);
-                            Console.Write("\t\tPrice: " + bookings[b].Price + Environment.NewLine);
+                            Console.Write("\t\t\tCustomer name: " + bookings[b].CustomerName + Environment.NewLine);
+                            Console.Write("\t\t\tAddress: " + bookings[b].CustomerAddress + Environment.NewLine);
+                            Console.Write("\t\t\tNumber of tickets: " + bookings[b].NumberOfTicketsToBuy + Environment.NewLine);
+                            Console.Write("\t\t\tPrice: {0:c}" + Environment.NewLine, bookings[i].Price);
                         }
                     }
                     else
@@ -496,25 +498,27 @@ namespace EventsManagementSystem
             {
                 for (int i = 0; i < Transactions.Count; i++)
                 {
-                    Console.WriteLine($"\nDate:\t{Transactions[i].DateOfTransaction}");
-                    Console.WriteLine($"Type:\t{Transactions[i].Action}");
+                    TransactionLog t = Transactions[i] as TransactionLog;
 
-                    switch (Transactions[i].Action)
+                    Console.WriteLine($"\nDate:\t{t.DateOfTransaction}");
+                    Console.WriteLine($"Type:\t{t.Action}");
+
+                    switch (t.Action)
                     {
                         case TransactionLog.Type.Add:
-                            Console.WriteLine(Transactions[i].EventDetails);
+                            Console.WriteLine(t.EventDetails);
                             break;
                         case TransactionLog.Type.Update:
-                            Console.WriteLine(Transactions[i].EventDetails);
+                            Console.WriteLine(t.EventDetails);
                             break;
                         case TransactionLog.Type.Delete:
-                            Console.WriteLine(Transactions[i].EventCode);
+                            Console.WriteLine(t.EventCode);
                             break;
                         case TransactionLog.Type.Book:
-                            Console.WriteLine(Transactions[i].BookType);
+                            Console.WriteLine(t.BookType);
                             break;
                         case TransactionLog.Type.Cancel:
-                            Console.WriteLine(Transactions[i].CancelType);
+                            Console.WriteLine(t.CancelType);
                             break;
                     }
                 }
