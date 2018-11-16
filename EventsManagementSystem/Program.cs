@@ -51,7 +51,7 @@ namespace EventsManagementSystem
                         break;
                     case BOOK_TICKET:
                         BookTickets();
-                        DisplayAllEvents();
+                        //DisplayAllEvents();
                         break;
                     case CANCEL_BOOKING:
                         CancelBooking();
@@ -327,7 +327,18 @@ namespace EventsManagementSystem
             else
             {
                 // No event
-                Console.WriteLine();
+                if (e == null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Event " + eCode + " doesn't exist");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("The event has no available tickets");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
             }
         }
 
