@@ -12,9 +12,16 @@ namespace EventsManagementSystem
 {
     public class Program
     {
-        public static ArrayList Events { get; set; } = new ArrayList();
-        public static BookingLinkedListNode Bookings { get; set; }
-        public static ArrayList TransactionLog { get; set; } = new ArrayList();
+        #region Collections
+        // A List<> because order doesn't matter. 
+        private static List<EventDetails> Events { get; set; } = new List<EventDetails>();
+
+        // A LinkedList because a Queue<> is a pain. 
+        private static BookingLinkedListNode Bookings { get; set; }
+
+        // Not ArrayList because you need to cast every time you get an element out and resize when remove (lazy programming). 
+        private static List<LogDetails> TransactionLog { get; set; } = new List<LogDetails>();
+        #endregion
 
         public static void Main(string[] args)
         {
@@ -34,8 +41,6 @@ namespace EventsManagementSystem
 
             int choice = DisplayMenu();
 
-            Console.WriteLine(choice);
-
             while (choice != EXIT)
             {
                 switch (choice)
@@ -51,7 +56,6 @@ namespace EventsManagementSystem
                         break;
                     case BOOK_TICKET:
                         BookTickets();
-                        //DisplayAllEvents();
                         break;
                     case CANCEL_BOOKING:
                         CancelBooking();
@@ -207,6 +211,8 @@ namespace EventsManagementSystem
                 e.PricePerTicket = ePricePerTicket;
                 e.DateUpdated = DateTime.Now;
 
+               Events[Events.IndexOf(e)] = new EventDetails();
+
                 BookingDetails[] bookings = BookingsForEvent(e.EventCode);
                 for (int i = 0; i < bookings.Length; i++)
                 {
@@ -308,6 +314,9 @@ namespace EventsManagementSystem
                     NumberOfTicketsToBuy = numOfTickets,
                     PricePerTicket = e.PricePerTicket
                 };
+
+                Console.WriteLine();
+                Console.WriteLine("Booking ref: " + b.BookingCode);
 
                 AddBooking(
                     new BookingLinkedListNode
@@ -466,12 +475,13 @@ namespace EventsManagementSystem
 
             if (Events.Count > 0)
             {
+                Console.WriteLine("Event(s):");
+
                 for (int i = 0; i < Events.Count; i++)
                 {
                     EventDetails e = Events[i] as EventDetails;
                     BookingDetails[] bookings = BookingsForEvent(e.EventCode);
 
-                    Console.WriteLine("Event(s):");
                     Console.WriteLine("\t" + e);
 
                     Console.WriteLine();
@@ -557,24 +567,49 @@ namespace EventsManagementSystem
 
             Console.WriteLine("8\t- Exit");
 
-            Console.WriteLine();
-            Console.Write("choice > ");
+            int? opt = null;
 
-            char.TryParse(Console.ReadLine(), out char opt);
-
-            while ((opt < 48) || (opt > 57))
+            do
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Only positive numbers are allowed!");
-                Console.ForegroundColor = ConsoleColor.Gray;
+                try
+                {
+                    Console.WriteLine();
+                    Console.Write("choice > ");
 
-                Console.WriteLine();
-                Console.Write("choice > ");
+                    opt = int.Parse(Console.ReadLine()); // String never null (ArgumentNullException)
+                    break;
+                }
+                catch (ArgumentNullException e) // Nothing entered - Shouldn't be needed as ReadLine is never null
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: " + e.Message);
+                    Console.WriteLine("Can't be nothing!");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                catch (FormatException e) // Not a number
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: " + e.Message);
+                    Console.WriteLine("Only positive numbers are allowed!");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                catch (OverflowException e) // Too many numbers
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: " + e.Message);
+                    Console.WriteLine("Too many characters!");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                catch (Exception e) // Any other error
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: " + e.Message);
+                    Console.ForegroundColor = ConsoleColor.Gray;
 
-                char.TryParse(Console.ReadLine(), out opt);
-            }
+                }
+            } while (!opt.HasValue);
 
-            return Convert.ToInt32(opt.ToString());
+            return opt.Value;
         }
     }
 }
