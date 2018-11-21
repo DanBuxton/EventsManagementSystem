@@ -13,14 +13,11 @@ namespace EventsManagementSystem
     public class Program
     {
         #region Collections
-        // A List<> because order doesn't matter. 
-        private static List<EventDetails> Events { get; set; } = new List<EventDetails>();
+        private static ArrayList Events { get; set; } = new ArrayList();
 
-        // A LinkedList because a Queue<> is a pain. 
         private static BookingLinkedListNode Bookings { get; set; }
 
-        // Not ArrayList because you need to cast every time you get an element out and resize when remove (lazy programming). 
-        private static List<LogDetails> TransactionLog { get; set; } = new List<LogDetails>();
+        private static ArrayList TransactionLog { get; set; } = new ArrayList();
         #endregion
 
         public static void Main(string[] args)
@@ -154,6 +151,7 @@ namespace EventsManagementSystem
         #region Events
         public static void AddAnEvent()
         {
+            // In a method because of repetition. 
             ReadCode("Event", out int eCode);
             ReadName(str: "Event", name: out string eName, maxLength: 50);
             ReadNumberOfTickets(out int eNumTickets);
@@ -174,7 +172,7 @@ namespace EventsManagementSystem
                 new LogDetails
                 {
                     Action = LogDetails.Type.Add,
-                    EventDetails = _event
+                    Details = "Event: " + _event + ";"
                 }
             );
         }
@@ -211,7 +209,15 @@ namespace EventsManagementSystem
                 e.PricePerTicket = ePricePerTicket;
                 e.DateUpdated = DateTime.Now;
 
-               Events[Events.IndexOf(e)] = new EventDetails();
+                Events[Events.IndexOf(e)] = new EventDetails
+                {
+                    EventCode = e.EventCode,
+                    Name = eName,
+                    NumberOfTicketsAvaliable = eNumTickets,
+                    NumberOfTickets = eNumTickets,
+                    PricePerTicket = ePricePerTicket,
+                    DateUpdated = DateTime.Now
+                };
 
                 BookingDetails[] bookings = BookingsForEvent(e.EventCode);
                 for (int i = 0; i < bookings.Length; i++)
@@ -223,7 +229,7 @@ namespace EventsManagementSystem
                     new LogDetails
                     {
                         Action = LogDetails.Type.Update,
-                        EventDetails = e
+                        Details = Events[Events.IndexOf(e)].ToString() + ";"
                     }
                 );
             }
@@ -240,11 +246,7 @@ namespace EventsManagementSystem
 
             if (e != null)
             {
-                // Remove event
-                Events.Remove(e);
-
-                // Remove bookings
-
+                // Remove bookings. 
                 BookingDetails[] books = BookingsForEvent(e.EventCode);
                 foreach (BookingDetails b in books)
                 {
@@ -255,9 +257,15 @@ namespace EventsManagementSystem
                     new LogDetails
                     {
                         Action = LogDetails.Type.Delete,
-                        EventCode = e.EventCode
+                        Details = "Event: " + e.EventCode + ";"
                     }
                 );
+
+                // Remove event. 
+                Events.Remove(e);
+
+                // Shrink the array size to save memory. 
+                Events.TrimToSize();
             }
             else
             {
@@ -329,7 +337,7 @@ namespace EventsManagementSystem
                     new LogDetails
                     {
                         Action = LogDetails.Type.Book,
-                        BookType = new BookType { EventCode = e.EventCode, BookingCode = b.BookingCode, NumOfTickets = numOfTickets }
+                        Details = "Event: " + e.EventCode + "; Booking ref: " + b.BookingCode + "; Tickets: " + numOfTickets + ";"
                     }
                 );
             }
@@ -368,13 +376,14 @@ namespace EventsManagementSystem
                 TransactionLog.Add(new LogDetails
                 {
                     Action = LogDetails.Type.Cancel,
-                    CancelType = new CancelType { BookingCode = bCode, NumOfTickets = b.NumberOfTicketsToBuy }
+                    Details = "Code: " + bCode + "; Tickets" + b.NumberOfTicketsToBuy + ";"
                 }
                 );
             }
             else
             {
                 // No booking
+                Console.WriteLine("There is no booking");
             }
         }
 
@@ -527,26 +536,27 @@ namespace EventsManagementSystem
                     switch (t.Action)
                     {
                         case LogDetails.Type.Add:
-                            Console.WriteLine(t.EventDetails);
+                            Console.WriteLine("\t" + t.Details);
                             break;
                         case LogDetails.Type.Update:
-                            Console.WriteLine(t.EventDetails);
+                            Console.WriteLine("\t" + t.Details);
                             break;
                         case LogDetails.Type.Delete:
-                            Console.WriteLine(t.EventCode);
+                            Console.WriteLine("\t" + t.Details);
                             break;
                         case LogDetails.Type.Book:
-                            Console.WriteLine(t.BookType);
+                            Console.WriteLine("\t" + t.Details);
                             break;
                         case LogDetails.Type.Cancel:
-                            Console.WriteLine(t.CancelType);
+                            Console.WriteLine("\t" + t.Details);
                             break;
                     }
+                    Console.WriteLine();
                 }
             }
             else
             {
-                Console.WriteLine("No TransactionLog");
+                Console.WriteLine("No transactions currently");
             }
         }
         #endregion
@@ -567,7 +577,8 @@ namespace EventsManagementSystem
 
             Console.WriteLine("8\t- Exit");
 
-            int? opt = null;
+            bool dataOK;
+            int opt = -1;
 
             do
             {
@@ -576,40 +587,36 @@ namespace EventsManagementSystem
                     Console.WriteLine();
                     Console.Write("choice > ");
 
-                    opt = int.Parse(Console.ReadLine()); // String never null (ArgumentNullException)
-                    break;
+                    opt = int.Parse(Console.ReadLine()); // String never null (ArgumentNullException). 
+                    dataOK = true;
                 }
-                catch (ArgumentNullException e) // Nothing entered - Shouldn't be needed as ReadLine is never null
+                catch (ArgumentNullException e) // Nothing entered - not needed as ReadLine is never null.
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("ERROR: " + e.Message);
                     Console.WriteLine("Can't be nothing!");
                     Console.ForegroundColor = ConsoleColor.Gray;
+                    dataOK = false;
                 }
-                catch (FormatException e) // Not a number
+                catch (FormatException e) // Not a number. 
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("ERROR: " + e.Message);
-                    Console.WriteLine("Only positive numbers are allowed!");
+                    Console.WriteLine("Must be a positive number!");
                     Console.ForegroundColor = ConsoleColor.Gray;
+                    dataOK = false;
                 }
-                catch (OverflowException e) // Too many numbers
+                catch (OverflowException e) // Too many numbers. 
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("ERROR: " + e.Message);
-                    Console.WriteLine("Too many characters!");
+                    Console.WriteLine("Too many numbers!");
                     Console.ForegroundColor = ConsoleColor.Gray;
+                    dataOK = false;
                 }
-                catch (Exception e) // Any other error
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("ERROR: " + e.Message);
-                    Console.ForegroundColor = ConsoleColor.Gray;
+            } while (!dataOK);
 
-                }
-            } while (!opt.HasValue);
-
-            return opt.Value;
+            return opt;
         }
     }
 }
