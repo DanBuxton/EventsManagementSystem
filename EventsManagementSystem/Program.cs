@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,11 +14,11 @@ namespace EventsManagementSystem
     public class Program
     {
         #region Collections
-        private static ArrayList Events { get; set; } = new ArrayList();
+        private static List<EventDetails> Events { get; set; } = new List<EventDetails>();
 
         private static BookingLinkedListNode Bookings { get; set; }
 
-        private static ArrayList TransactionLog { get; set; } = new ArrayList();
+        private static List<LogDetails> TransactionLog { get; set; } = new List<LogDetails>();
         #endregion
 
         public static void Main(string[] args)
@@ -68,10 +69,24 @@ namespace EventsManagementSystem
                         break;
                 }
 
+                // Save data stores to file.
+                //SaveData();
+
                 Console.WriteLine("\nPress any key to continue");
                 Console.ReadKey();
 
                 choice = DisplayMenu();
+            }
+        }
+
+        private static void SaveData()
+        {
+            using (StreamWriter sw = new StreamWriter("E:\\BSc Software Engineering\\" +
+                "Year 1\\EventsManagementSystem\\Events.txt"))
+            {
+
+
+                sw.Close();
             }
         }
 
@@ -100,7 +115,7 @@ namespace EventsManagementSystem
             Console.Write($"{str} name: ");
             name = Console.ReadLine();
 
-            while ((name.Length < minLength) || (name.Length > maxLength))
+            while ((name.Length <= minLength) || (name.Length >= maxLength))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Must be between {minLength} and {maxLength} characters long");
@@ -172,7 +187,7 @@ namespace EventsManagementSystem
                 new LogDetails
                 {
                     Action = LogDetails.Type.Add,
-                    Details = "Event: " + _event + ";"
+                    Details = _event + ";"
                 }
             );
         }
@@ -195,7 +210,7 @@ namespace EventsManagementSystem
                 Console.WriteLine("Must be greater than 0");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
-                Console.Write("Number of tickets: ");
+                Console.Write("Number of tickets to add: ");
                 int.TryParse(Console.ReadLine(), out eNumTickets);
             }
 
@@ -203,33 +218,29 @@ namespace EventsManagementSystem
 
             if (e != null)
             {
-                e.Name = eName;
-                e.NumberOfTickets += eNumTickets;
-                e.NumberOfTicketsAvaliable += eNumTickets;
-                e.PricePerTicket = ePricePerTicket;
-                e.DateUpdated = DateTime.Now;
+                //e.Name = eName;
+                //e.NumberOfTickets += eNumTickets;
+                //e.NumberOfTicketsAvaliable += eNumTickets;
+                //e.PricePerTicket = ePricePerTicket;
+                //e.DateUpdated = DateTime.Now;
 
-                Events[Events.IndexOf(e)] = new EventDetails
+                var ev = new EventDetails
                 {
                     EventCode = e.EventCode,
                     Name = eName,
-                    NumberOfTicketsAvaliable = eNumTickets,
-                    NumberOfTickets = eNumTickets,
+                    NumberOfTickets = eNumTickets + e.NumberOfTickets,
+                    NumberOfTicketsAvaliable = eNumTickets + e.NumberOfTicketsAvaliable,
                     PricePerTicket = ePricePerTicket,
                     DateUpdated = DateTime.Now
                 };
 
-                BookingDetails[] bookings = BookingsForEvent(e.EventCode);
-                for (int i = 0; i < bookings.Length; i++)
-                {
-                    // Alter number of tickets
-                }
+                Events[Events.IndexOf(e)] = ev;
 
                 TransactionLog.Add(
                     new LogDetails
                     {
                         Action = LogDetails.Type.Update,
-                        Details = Events[Events.IndexOf(e)].ToString() + ";"
+                        Details = ev.ToString() + ";"
                     }
                 );
             }
@@ -263,9 +274,6 @@ namespace EventsManagementSystem
 
                 // Remove event. 
                 Events.Remove(e);
-
-                // Shrink the array size to save memory. 
-                Events.TrimToSize();
             }
             else
             {
@@ -530,7 +538,7 @@ namespace EventsManagementSystem
                 {
                     LogDetails t = TransactionLog[i] as LogDetails;
 
-                    Console.WriteLine($"\nDate:\t{t.DateOfTransaction}");
+                    Console.WriteLine($"Date:\t{t.DateOfTransaction}");
                     Console.WriteLine($"Type:\t{t.Action}");
 
                     switch (t.Action)
@@ -590,7 +598,7 @@ namespace EventsManagementSystem
                     opt = int.Parse(Console.ReadLine()); // String never null (ArgumentNullException). 
                     dataOK = true;
                 }
-                catch (ArgumentNullException e) // Nothing entered - not needed as ReadLine is never null.
+                catch (ArgumentNullException e) // Nothing entered - not needed as ReadLine is never null. (very rare). 
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("ERROR: " + e.Message);
