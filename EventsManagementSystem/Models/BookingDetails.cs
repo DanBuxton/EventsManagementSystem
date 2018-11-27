@@ -8,7 +8,7 @@ namespace EventsManagementSystem.Models
 {
     public class BookingDetails
     {
-        public int BookingCode { get; } = prevCode++;
+        public int BookingCode { get; protected internal set; } = prevCode++;
         //public int BookingCode { get => bookingCode; set => bookingCode = (value > 999 && value < 10000 ? value : bookingCode); }
         private static int prevCode = 1000;
 
@@ -37,7 +37,7 @@ namespace EventsManagementSystem.Models
 
         public double Price { get { return numberOfTicketsToBuy * pricePerTicket; } }
         
-        public DateTime DateAdded { get; } = DateTime.Now;
+        public DateTime DateAdded { get; protected internal set; } = DateTime.Now;
 
         public override string ToString()
         {

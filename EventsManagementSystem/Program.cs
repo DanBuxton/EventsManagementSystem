@@ -13,6 +13,10 @@ namespace EventsManagementSystem
 {
     public class Program
     {
+        private static readonly string eventFileName = "events.dat";
+        private static readonly string bookingsFileName = "bookings.dat";
+        private static readonly string transactionsFileName = "log.dat";
+
         #region Collections
         private static List<EventDetails> Events { get; set; } = new List<EventDetails>();
 
@@ -23,6 +27,8 @@ namespace EventsManagementSystem
 
         public static void Main(string[] args)
         {
+            LoadData();
+
             Console.ForegroundColor = ConsoleColor.Gray;
 
             const int ADD_EVENT = 1;
@@ -79,19 +85,165 @@ namespace EventsManagementSystem
             }
         }
 
+        #region Data Retention
+        private static void LoadData()
+        {
+            FileInfo dataFile;
+            FileStream fs;
+            StreamReader sr;
+
+            int delayInMilli = 5000;
+
+            // Load Events
+            try
+            {
+                dataFile = new FileInfo(eventFileName);
+                fs = dataFile.OpenRead();
+                sr = new StreamReader(fs);
+
+                while (!sr.EndOfStream)
+                {
+                    try
+                    {
+                        string[] ev = sr.ReadLine().Split(';');
+
+                        EventDetails e = new EventDetails
+                        {
+                            EventCode = int.Parse(ev[0]),
+                            Name = ev[1],
+                            NumberOfTickets = int.Parse(ev[2]),
+                            PricePerTicket = double.Parse(ev[3]),
+                            NumberOfTicketsAvaliable = int.Parse(ev[4]),
+                            DateAdded = DateTime.Parse(ev[5]),
+                            DateUpdated = DateTime.Parse(ev[6])
+                        };
+
+                        Events.Add(e);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: {0}", e.Message);
+
+                        Thread.Sleep(delayInMilli);
+                    }
+                }
+
+                sr.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: {0}", e.Message);
+
+                Thread.Sleep(delayInMilli);
+            }
+
+            // Load Bookings
+            try
+            {
+                dataFile = new FileInfo(bookingsFileName);
+                fs = dataFile.OpenRead();
+                sr = new StreamReader(fs);
+
+                while (!sr.EndOfStream)
+                {
+                    try
+                    {
+                        string[] ev = sr.ReadLine().Split(';');
+
+                        BookingDetails b = new BookingDetails
+                        {
+                            BookingCode = int.Parse(ev[0]),
+                            EventCode = int.Parse(ev[1]),
+                            CustomerName = ev[2],
+                            CustomerAddress = ev[3],
+                            PricePerTicket = double.Parse(ev[4]),
+                            NumberOfTicketsToBuy = int.Parse(ev[5]),
+                            DateAdded = DateTime.Parse(ev[6])
+                        };
+
+                        AddBooking(new BookingLinkedListNode { Data = b });
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: {0}", e.Message);
+
+                        Thread.Sleep(delayInMilli);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: {0}", e.Message);
+
+                Thread.Sleep(delayInMilli);
+            }
+
+            // Load Log
+            try
+            {
+                dataFile = new FileInfo(transactionsFileName);
+                fs = dataFile.OpenRead();
+                sr = new StreamReader(fs);
+
+                while (!sr.EndOfStream)
+                {
+                    try
+                    {
+                        string[] tl = sr.ReadLine().Split(';');
+
+                        LogDetails t = new LogDetails
+                        {
+                            //Action = tl[0],
+                            Details = tl[1],
+                            DateOfTransaction = DateTime.Parse(tl[0])
+                        };
+
+                        TransactionLog.Add(t);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: {0}", e.Message);
+
+                        Thread.Sleep(delayInMilli);
+                    }
+                }
+
+                sr.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: {0}", e.Message);
+
+                Thread.Sleep(delayInMilli);
+            }
+        }
         private static void SaveData()
         {
-            FileInfo dataFile = new FileInfo("data.dat");
+            FileInfo dataFile = new FileInfo(eventFileName);
             FileStream fs = dataFile.Create();
             StreamWriter sw = new StreamWriter(fs);
 
             foreach (var e in Events)
             {
-                sw.WriteLine("{0:d};{1};{2};{3}", e.EventCode, e.Name, e.NumberOfTickets, e.PricePerTicket, e.NumberOfTicketsAvaliable);
+                sw.WriteLine("{0:d};{1};{2};{3};{4};{5};{6}", e.EventCode, e.Name,
+                    e.NumberOfTickets, e.PricePerTicket, e.NumberOfTicketsAvaliable, e.DateAdded, e.DateUpdated);
+            }
+
+            BookingLinkedListNode current = Bookings, prev = current;
+
+            while (current != null)
+            {
+                BookingDetails b = current.Data;
+                sw.WriteLine("{0:d};{1};{2};{3};{4};{5};{6}", b.BookingCode, b.EventCode,
+                    b.CustomerName, b.CustomerAddress, b.PricePerTicket, b.NumberOfTicketsToBuy, b.DateAdded);
+
+                prev = current;
+                current = prev.NextNode;
             }
 
             sw.Close();
         }
+        #endregion
 
         #region Read Input
         private static void ReadCode(string str, out int id, int len = 4)

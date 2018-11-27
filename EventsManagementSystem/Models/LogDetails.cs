@@ -28,6 +28,6 @@ namespace EventsManagementSystem.Models
         //public CancelType CancelType { get; set; }
         #endregion
 
-        public DateTime DateOfTransaction { get; } = DateTime.Now;
+        public DateTime DateOfTransaction { get; protected internal set; } = DateTime.Now;
     }
 }
