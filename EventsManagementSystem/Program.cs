@@ -234,8 +234,8 @@ namespace EventsManagementSystem
             while (current != null)
             {
                 BookingDetails b = current.Data;
-                sw.WriteLine("{0:d};{1};{2};{3};{4};{5};{6}", b.BookingCode, b.EventCode,
-                    b.CustomerName, b.CustomerAddress, b.PricePerTicket, b.NumberOfTicketsToBuy, b.DateAdded);
+                //sw.WriteLine("{0:d};{1};{2};{3};{4};{5};{6}", b.BookingCode, b.EventCode,
+                //    b.CustomerName, b.CustomerAddress, b.PricePerTicket, b.NumberOfTicketsToBuy, b.DateAdded);
 
                 prev = current;
                 current = prev.NextNode;
