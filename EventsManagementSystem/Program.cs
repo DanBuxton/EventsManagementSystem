@@ -81,13 +81,16 @@ namespace EventsManagementSystem
 
         private static void SaveData()
         {
-            using (StreamWriter sw = new StreamWriter("E:\\BSc Software Engineering\\" +
-                "Year 1\\EventsManagementSystem\\Events.txt"))
+            FileInfo dataFile = new FileInfo("data.txt");
+            FileStream fs = dataFile.Create();
+            StreamWriter sw = new StreamWriter(fs);
+
+            foreach (var e in Events)
             {
-
-
-                sw.Close();
+                sw.WriteLine("{0:d};", e.EventCode);
             }
+
+            sw.Close();
         }
 
         #region Read Input
