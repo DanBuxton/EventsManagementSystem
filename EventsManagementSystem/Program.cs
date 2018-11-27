@@ -70,7 +70,7 @@ namespace EventsManagementSystem
                 }
 
                 // Save data stores to file.
-                //SaveData();
+                SaveData();
 
                 Console.WriteLine("\nPress any key to continue");
                 Console.ReadKey();
@@ -81,13 +81,13 @@ namespace EventsManagementSystem
 
         private static void SaveData()
         {
-            FileInfo dataFile = new FileInfo("data.txt");
+            FileInfo dataFile = new FileInfo("data.dat");
             FileStream fs = dataFile.Create();
             StreamWriter sw = new StreamWriter(fs);
 
             foreach (var e in Events)
             {
-                sw.WriteLine("{0:d};", e.EventCode);
+                sw.WriteLine("{0:d};{1};{2};{3}", e.EventCode, e.Name, e.NumberOfTickets, e.PricePerTicket, e.NumberOfTicketsAvaliable);
             }
 
             sw.Close();

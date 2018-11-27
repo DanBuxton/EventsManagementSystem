@@ -67,8 +67,8 @@ namespace EventsManagementSystem.Models
 
         public override string ToString()
         {
-            return string.Format("Id: {0:d}; Name: {1:s}; Tickets: {2:N0} ticket{3:s} at {4:c}; ({5:N0} left)", EventCode,
-                Name, NumberOfTickets, (NumberOfTickets > 1 ? "s" : ""), pricePerTicket, numberOfTicketsAvaliable);
+            return string.Format("Id: {0:d}; Name: {1:s}; Tickets: {2:N0} at {3:c}; ({4:N0} left)", EventCode,
+                Name, NumberOfTickets, pricePerTicket, numberOfTicketsAvaliable);
         }
     }
 }
