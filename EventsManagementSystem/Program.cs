@@ -218,29 +218,17 @@ namespace EventsManagementSystem
 
             if (e != null)
             {
-                //e.Name = eName;
-                //e.NumberOfTickets += eNumTickets;
-                //e.NumberOfTicketsAvaliable += eNumTickets;
-                //e.PricePerTicket = ePricePerTicket;
-                //e.DateUpdated = DateTime.Now;
-
-                var ev = new EventDetails
-                {
-                    EventCode = e.EventCode,
-                    Name = eName,
-                    NumberOfTickets = eNumTickets + e.NumberOfTickets,
-                    NumberOfTicketsAvaliable = eNumTickets + e.NumberOfTicketsAvaliable,
-                    PricePerTicket = ePricePerTicket,
-                    DateUpdated = DateTime.Now
-                };
-
-                Events[Events.IndexOf(e)] = ev;
+                e.Name = eName;
+                e.NumberOfTickets += eNumTickets;
+                e.NumberOfTicketsAvaliable += eNumTickets;
+                e.PricePerTicket = ePricePerTicket;
+                e.DateUpdated = DateTime.Now;
 
                 TransactionLog.Add(
                     new LogDetails
                     {
                         Action = LogDetails.Type.Update,
-                        Details = ev.ToString() + ";"
+                        Details = e.ToString() + ";"
                     }
                 );
             }
