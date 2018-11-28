@@ -13,9 +13,9 @@ namespace EventsManagementSystem
 {
     public class Program
     {
-        private static readonly string eventFileName = "events.dat";
-        private static readonly string bookingsFileName = "bookings.dat";
-        private static readonly string transactionsFileName = "log.dat";
+        //private static readonly string eventFileName = "events.dat";
+        //private static readonly string bookingsFileName = "bookings.dat";
+        //private static readonly string transactionsFileName = "log.dat";
 
         #region Collections
         private static List<EventDetails> Events { get; set; } = new List<EventDetails>();
@@ -381,6 +381,12 @@ namespace EventsManagementSystem
                 e.PricePerTicket = ePricePerTicket;
                 e.DateUpdated = DateTime.Now;
 
+                var books = BookingsForEvent(e.EventCode);
+                foreach (var b in books)
+                {
+                    b.PricePerTicket = e.PricePerTicket;
+                }
+
                 TransactionLog.Add(
                     new LogDetails
                     {
@@ -529,7 +535,7 @@ namespace EventsManagementSystem
                 TransactionLog.Add(new LogDetails
                 {
                     Action = LogDetails.Type.Cancel,
-                    Details = "Code: " + bCode + "; Tickets" + b.NumberOfTicketsToBuy + ";"
+                    Details = "Code: " + bCode + "; Tickets: " + b.NumberOfTicketsToBuy + ";"
                 }
                 );
             }
@@ -610,7 +616,7 @@ namespace EventsManagementSystem
             }
         }
 
-        private static BookingDetails[] BookingsForEvent(int id)
+        private static BookingDetails[] BookingsForEvent(int eventCode)
         {
             Queue<BookingDetails> bookings = new Queue<BookingDetails>();
 
@@ -618,7 +624,7 @@ namespace EventsManagementSystem
 
             while (current != null)
             {
-                if (current.Data.EventCode == id)
+                if (current.Data.EventCode == eventCode)
                 {
                     bookings.Enqueue(current.Data);
                 }

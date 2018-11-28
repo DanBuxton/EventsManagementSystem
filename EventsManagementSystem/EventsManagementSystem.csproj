@@ -44,8 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\BookingDetails.cs" />
-    <Compile Include="Models\BookType.cs" />
-    <Compile Include="Models\CancelType.cs" />
     <Compile Include="Models\EventDetails.cs" />
     <Compile Include="Models\BookingLinkedListNode.cs" />
     <Compile Include="Program.cs" />
