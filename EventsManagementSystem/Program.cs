@@ -27,7 +27,7 @@ namespace EventsManagementSystem
 
         public static void Main(string[] args)
         {
-            LoadData();
+            //LoadData();
 
             Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -76,7 +76,7 @@ namespace EventsManagementSystem
                 }
 
                 // Save data stores to file.
-                SaveData();
+                //SaveData();
 
                 Console.WriteLine("\nPress any key to continue");
                 Console.ReadKey();
@@ -86,6 +86,7 @@ namespace EventsManagementSystem
         }
 
         #region Data Retention
+        /*
         private static void LoadData()
         {
             FileInfo dataFile;
@@ -243,6 +244,7 @@ namespace EventsManagementSystem
 
             sw.Close();
         }
+        */
         #endregion
 
         #region Read Input
