@@ -19,9 +19,8 @@ namespace EventsManagementSystem
 
         #region Collections
         private static List<EventDetails> Events { get; set; } = new List<EventDetails>();
-
-        private static BookingLinkedListNode Bookings { get; set; }
-
+        //private static BookingLinkedListNode Bookings1 { get; set; } // SortedDictionary???
+        private static SortedDictionary<int, BookingDetails> Bookings { get; set; } = new SortedDictionary<int, BookingDetails>();
         private static List<LogDetails> TransactionLog { get; set; } = new List<LogDetails>();
         #endregion
 
@@ -250,22 +249,22 @@ namespace EventsManagementSystem
         #region Read Input
         private static void ReadCode(string str, out int id, int len = 4)
         {
-            int eCode = -1;
+            int code = -1;
 
             Console.Write($"{str} code (xxxx): ");
-            int.TryParse(Console.ReadLine(), out eCode);
+            int.TryParse(Console.ReadLine(), out code);
 
-            while ((eCode < 1000) || (eCode > 10000))
+            while ((code < 1000) || (code >= 10000))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Must be a number 4-digits long");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
                 Console.Write($"{str} code (xxxx): ");
-                int.TryParse(Console.ReadLine(), out eCode);
+                int.TryParse(Console.ReadLine(), out code);
             }
 
-            id = eCode;
+            id = code;
         }
         private static void ReadName(string str, out string name, int maxLength /*= 40*/, int minLength = 4)
         {
@@ -323,13 +322,12 @@ namespace EventsManagementSystem
         #region Events
         public static void AddAnEvent()
         {
-            // In a method because of repetition. 
             ReadCode("Event", out int eCode);
             ReadName(str: "Event", name: out string eName, maxLength: 50);
             ReadNumberOfTickets(out int eNumTickets);
             ReadPricePerTicket(out double ePricePerTicket);
 
-            EventDetails _event = new EventDetails
+            EventDetails e = new EventDetails
             {
                 EventCode = eCode,
                 Name = eName,
@@ -338,13 +336,13 @@ namespace EventsManagementSystem
                 PricePerTicket = ePricePerTicket
             };
 
-            Events.Add(_event);
+            Events.Add(e);
 
             TransactionLog.Add(
                 new LogDetails
                 {
                     Action = LogDetails.Type.Add,
-                    Details = _event + ";"
+                    Details = e + ";"
                 }
             );
         }
@@ -485,12 +483,7 @@ namespace EventsManagementSystem
                 Console.WriteLine();
                 Console.WriteLine("Booking ref: " + b.BookingCode);
 
-                AddBooking(
-                    new BookingLinkedListNode
-                    {
-                        Data = b
-                    }
-                );
+                AddBooking(b);
 
                 TransactionLog.Add(
                     new LogDetails
@@ -546,69 +539,20 @@ namespace EventsManagementSystem
             }
         }
 
-        public static void AddBooking(BookingLinkedListNode newBooking)
+        public static void AddBooking(BookingDetails b)
         {
-            BookingLinkedListNode current = Bookings, prev = current;
-
-            while (current != null && current.Data.DateAdded < newBooking.Data.DateAdded)
-            {
-                prev = current;
-                current = prev.NextNode;
-            }
-
-            if (current == prev)
-            {
-                // New head
-                newBooking.NextNode = Bookings;
-                Bookings = newBooking;
-            }
-            else if (current == null)
-            {
-                // New tail
-                prev.NextNode = newBooking;
-            }
-            else
-            {
-                newBooking.NextNode = current;
-                prev.NextNode = newBooking;
-            }
+            Bookings.Add(b.BookingCode, b);
         }
         public static void DeleteBooking(BookingDetails b)
         {
-            BookingLinkedListNode current = Bookings, prev = current;
-
-            while (current != null && current.Data.BookingCode != b.BookingCode)
-            {
-                prev = current;
-                current = prev.NextNode;
-            }
-
-            if (current != null)
-            {
-                if (current == prev)
-                {
-                    // Delete head
-                    Bookings = current.NextNode;
-                }
-                else
-                {
-                    prev.NextNode = current.NextNode;
-                }
-            }
+            Bookings.Remove(b.BookingCode);
         }
-
         private static BookingDetails GetBooking(int bookingCode)
         {
             try
             {
-                BookingLinkedListNode current = Bookings;
 
-                while (current != null && current.Data.BookingCode != bookingCode)
-                {
-                    current = current.NextNode;
-                }
-
-                return (current.Data.BookingCode == bookingCode ? current.Data : null);
+                return Bookings[bookingCode];
             }
             catch (Exception)
             {
@@ -618,19 +562,7 @@ namespace EventsManagementSystem
 
         private static BookingDetails[] BookingsForEvent(int eventCode)
         {
-            Queue<BookingDetails> bookings = new Queue<BookingDetails>();
-
-            BookingLinkedListNode current = Bookings;
-
-            while (current != null)
-            {
-                if (current.Data.EventCode == eventCode)
-                {
-                    bookings.Enqueue(current.Data);
-                }
-
-                current = current.NextNode;
-            }
+            var bookings = Bookings.Values.Where(b=>b.EventCode == eventCode);
 
             return bookings.ToArray();
         }

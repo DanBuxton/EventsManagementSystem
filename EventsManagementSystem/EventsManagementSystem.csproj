@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="Models\BookingDetails.cs" />
     <Compile Include="Models\EventDetails.cs" />
-    <Compile Include="Models\BookingLinkedListNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\LogDetails.cs" />
