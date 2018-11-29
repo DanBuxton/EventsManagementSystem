@@ -17,7 +17,7 @@ namespace EventsManagementSystem.Models
             Cancel = 4
         }
 
-        public Type Action { get; set; } = Type.Add;
+        public string Action { get; set; } = "Add";
 
         public string Details;
 

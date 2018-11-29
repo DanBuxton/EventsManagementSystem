@@ -13,9 +13,9 @@ namespace EventsManagementSystem
 {
     public class Program
     {
-        //private static readonly string eventFileName = "events.dat";
-        //private static readonly string bookingsFileName = "bookings.dat";
-        //private static readonly string transactionsFileName = "log.dat";
+        private static readonly string eventFilename = "events.dat";
+        private static readonly string bookingsFilename = "bookings.dat";
+        private static readonly string transactionsFilename = "log.dat";
 
         #region Collections
         private static List<EventDetails> Events { get; set; } = new List<EventDetails>();
@@ -26,7 +26,7 @@ namespace EventsManagementSystem
 
         public static void Main(string[] args)
         {
-            //LoadData();
+            LoadData();
 
             Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -74,18 +74,17 @@ namespace EventsManagementSystem
                         break;
                 }
 
-                // Save data stores to file.
-                //SaveData();
-
                 Console.WriteLine("\nPress any key to continue");
                 Console.ReadKey();
 
                 choice = DisplayMenu();
             }
+
+            // Save data stores to file.
+            SaveData();
         }
 
         #region Data Retention
-        /*
         private static void LoadData()
         {
             FileInfo dataFile;
@@ -94,10 +93,10 @@ namespace EventsManagementSystem
 
             int delayInMilli = 5000;
 
-            // Load Events
+            // Events
             try
             {
-                dataFile = new FileInfo(eventFileName);
+                dataFile = new FileInfo(eventFilename);
                 fs = dataFile.OpenRead();
                 sr = new StreamReader(fs);
 
@@ -114,8 +113,8 @@ namespace EventsManagementSystem
                             NumberOfTickets = int.Parse(ev[2]),
                             PricePerTicket = double.Parse(ev[3]),
                             NumberOfTicketsAvaliable = int.Parse(ev[4]),
-                            DateAdded = DateTime.Parse(ev[5]),
-                            DateUpdated = DateTime.Parse(ev[6])
+                            DateAdded = new DateTime(Convert.ToInt64(ev[5])),
+                            DateUpdated = new DateTime(Convert.ToInt64(ev[6]))
                         };
 
                         Events.Add(e);
@@ -137,10 +136,10 @@ namespace EventsManagementSystem
                 Thread.Sleep(delayInMilli);
             }
 
-            // Load Bookings
+            // Bookings
             try
             {
-                dataFile = new FileInfo(bookingsFileName);
+                dataFile = new FileInfo(bookingsFilename);
                 fs = dataFile.OpenRead();
                 sr = new StreamReader(fs);
 
@@ -161,7 +160,7 @@ namespace EventsManagementSystem
                             DateAdded = DateTime.Parse(ev[6])
                         };
 
-                        AddBooking(new BookingLinkedListNode { Data = b });
+                        AddBooking(b);
                     }
                     catch (Exception e)
                     {
@@ -178,10 +177,10 @@ namespace EventsManagementSystem
                 Thread.Sleep(delayInMilli);
             }
 
-            // Load Log
+            // Log
             try
             {
-                dataFile = new FileInfo(transactionsFileName);
+                dataFile = new FileInfo(transactionsFilename);
                 fs = dataFile.OpenRead();
                 sr = new StreamReader(fs);
 
@@ -193,9 +192,9 @@ namespace EventsManagementSystem
 
                         LogDetails t = new LogDetails
                         {
-                            //Action = tl[0],
+                            Action = tl[0],
                             Details = tl[1],
-                            DateOfTransaction = DateTime.Parse(tl[0])
+                            DateOfTransaction = new DateTime(Convert.ToInt64(tl[0]))
                         };
 
                         TransactionLog.Add(t);
@@ -219,31 +218,79 @@ namespace EventsManagementSystem
         }
         private static void SaveData()
         {
-            FileInfo dataFile = new FileInfo(eventFileName);
-            FileStream fs = dataFile.Create();
-            StreamWriter sw = new StreamWriter(fs);
+            FileInfo dataFile;
+            FileStream fs;
+            StreamWriter sw;
 
-            foreach (var e in Events)
+            int delayInMilli = 5000;
+
+            // Events
+            try
             {
-                sw.WriteLine("{0:d};{1};{2};{3};{4};{5};{6}", e.EventCode, e.Name,
-                    e.NumberOfTickets, e.PricePerTicket, e.NumberOfTicketsAvaliable, e.DateAdded, e.DateUpdated);
+                dataFile = new FileInfo(eventFilename);
+                fs = dataFile.Create();
+                sw = new StreamWriter(fs);
+
+                foreach (var e in Events)
+                {
+                    sw.WriteLine("{0:d};{1:s};{2:d};{3};{4:d};{5};{6}", e.EventCode, e.Name, e.NumberOfTickets,
+                        e.PricePerTicket, e.NumberOfTicketsAvaliable, e.DateAdded.Ticks, e.DateUpdated.Ticks);
+                }
+
+                sw.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Event Error: {0:s}", e.Message);
+
+                Thread.Sleep(delayInMilli);
             }
 
-            BookingLinkedListNode current = Bookings, prev = current;
-
-            while (current != null)
+            // Bookings
+            try
             {
-                BookingDetails b = current.Data;
-                //sw.WriteLine("{0:d};{1};{2};{3};{4};{5};{6}", b.BookingCode, b.EventCode,
-                //    b.CustomerName, b.CustomerAddress, b.PricePerTicket, b.NumberOfTicketsToBuy, b.DateAdded);
+                dataFile = new FileInfo(bookingsFilename);
+                fs = dataFile.Create();
+                sw = new StreamWriter(fs);
 
-                prev = current;
-                current = prev.NextNode;
+                foreach (var book in Bookings)
+                {
+                    BookingDetails b = book.Value;
+
+                    sw.WriteLine("{0:d};{1};{2};{3};{4};{5};{6}", b.BookingCode, b.EventCode,
+                        b.CustomerName, b.CustomerAddress, b.PricePerTicket, b.NumberOfTicketsToBuy, b.DateAdded.Ticks);
+                }
+
+                sw.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Booking Error: {0}", e.Message);
+
+                Thread.Sleep(delayInMilli);
             }
 
-            sw.Close();
+            // Log
+            try
+            {
+                dataFile = new FileInfo(transactionsFilename);
+                fs = dataFile.Create();
+                sw = new StreamWriter(fs);
+
+                foreach (var l in TransactionLog)
+                {
+                    sw.WriteLine("{0:s};{1:s};{2:s}", l.Action, l.Details, l.DateOfTransaction.ToBinary());
+                }
+
+                sw.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Log Error: {0}", e.Message);
+
+                Thread.Sleep(delayInMilli);
+            }
         }
-        */
         #endregion
 
         #region Read Input
@@ -341,7 +388,7 @@ namespace EventsManagementSystem
             TransactionLog.Add(
                 new LogDetails
                 {
-                    Action = LogDetails.Type.Add,
+                    Action = "Add",
                     Details = e + ";"
                 }
             );
@@ -388,7 +435,7 @@ namespace EventsManagementSystem
                 TransactionLog.Add(
                     new LogDetails
                     {
-                        Action = LogDetails.Type.Update,
+                        Action = "Update",
                         Details = e.ToString() + ";"
                     }
                 );
@@ -416,7 +463,7 @@ namespace EventsManagementSystem
                 TransactionLog.Add(
                     new LogDetails
                     {
-                        Action = LogDetails.Type.Delete,
+                        Action = "Delete",
                         Details = "Event: " + e.EventCode + ";"
                     }
                 );
@@ -488,7 +535,7 @@ namespace EventsManagementSystem
                 TransactionLog.Add(
                     new LogDetails
                     {
-                        Action = LogDetails.Type.Book,
+                        Action = "Book",
                         Details = "Event: " + e.EventCode + "; Booking ref: " + b.BookingCode + "; Tickets: " + numOfTickets + ";"
                     }
                 );
@@ -525,11 +572,12 @@ namespace EventsManagementSystem
 
                 DeleteBooking(b);
 
-                TransactionLog.Add(new LogDetails
-                {
-                    Action = LogDetails.Type.Cancel,
-                    Details = "Code: " + bCode + "; Tickets: " + b.NumberOfTicketsToBuy + ";"
-                }
+                TransactionLog.Add(
+                    new LogDetails
+                    {
+                        Action = "Cancel",
+                        Details = "Code: " + bCode + "; Tickets: " + b.NumberOfTicketsToBuy + ";"
+                    }
                 );
             }
             else
@@ -562,7 +610,7 @@ namespace EventsManagementSystem
 
         private static BookingDetails[] BookingsForEvent(int eventCode)
         {
-            var bookings = Bookings.Values.Where(b=>b.EventCode == eventCode);
+            var bookings = Bookings.Values.Where(b => b.EventCode == eventCode);
 
             return bookings.ToArray();
         }
@@ -595,10 +643,10 @@ namespace EventsManagementSystem
                             Console.WriteLine();
 
                             Console.Write("\t\tRef: " + bookings[b].BookingCode + Environment.NewLine);
-                            Console.Write("\t\t\tCustomer name: " + bookings[b].CustomerName + Environment.NewLine);
-                            Console.Write("\t\t\tAddress: " + bookings[b].CustomerAddress + Environment.NewLine);
-                            Console.Write("\t\t\tNumber of tickets: " + bookings[b].NumberOfTicketsToBuy + Environment.NewLine);
-                            Console.Write("\t\t\tPrice: {0:c}" + Environment.NewLine, bookings[i].Price);
+                            Console.Write("\t\tCustomer name: " + bookings[b].CustomerName + Environment.NewLine);
+                            Console.Write("\t\tAddress: " + bookings[b].CustomerAddress + Environment.NewLine);
+                            Console.Write("\t\tNumber of tickets: " + bookings[b].NumberOfTicketsToBuy + Environment.NewLine);
+                            Console.Write("\t\tPrice: {0:c}" + Environment.NewLine, bookings[i].Price);
                         }
                     }
                     else
@@ -626,19 +674,19 @@ namespace EventsManagementSystem
 
                     switch (t.Action)
                     {
-                        case LogDetails.Type.Add:
+                        case "Add":
                             Console.WriteLine("\t" + t.Details);
                             break;
-                        case LogDetails.Type.Update:
+                        case "Update":
                             Console.WriteLine("\t" + t.Details);
                             break;
-                        case LogDetails.Type.Delete:
+                        case "Delete":
                             Console.WriteLine("\t" + t.Details);
                             break;
-                        case LogDetails.Type.Book:
+                        case "Book":
                             Console.WriteLine("\t" + t.Details);
                             break;
-                        case LogDetails.Type.Cancel:
+                        case "Cancel":
                             Console.WriteLine("\t" + t.Details);
                             break;
                     }
