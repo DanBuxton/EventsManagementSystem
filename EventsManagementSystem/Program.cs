@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 using EventsManagementSystem.Models;
 
@@ -80,11 +77,11 @@ namespace EventsManagementSystem
         }
 
         #region Data Retention
-
         private static readonly string eventFilename = "events.dat";
         private static readonly string bookingsFilename = "bookings.dat";
         private static readonly string transactionsFilename = "log.dat";
         private static readonly char separator = '\\';
+
         private static FileInfo dataFile;
         private static FileStream fs;
 
@@ -161,7 +158,7 @@ namespace EventsManagementSystem
                             DateAdded = new DateTime(Convert.ToInt64(ev[6]))
                         };
 
-                        AddBooking(b);
+                        Bookings.Add(b.BookingCode, b);
                     }
                     catch (Exception e)
                     {
@@ -179,6 +176,7 @@ namespace EventsManagementSystem
 
                 Thread.Sleep(delayInMilli);
             }
+
 
             // Log
             try
@@ -456,7 +454,7 @@ namespace EventsManagementSystem
                 BookingDetails[] books = BookingsForEvent(e.EventCode);
                 foreach (BookingDetails b in books)
                 {
-                    DeleteBooking(b);
+                    Bookings.Remove(b.BookingCode);
                 }
 
                 TransactionLog.Add(
@@ -529,7 +527,7 @@ namespace EventsManagementSystem
                 Console.WriteLine();
                 Console.WriteLine("Booking ref: " + b.BookingCode);
 
-                AddBooking(b);
+                Bookings.Add(b.BookingCode, b);
 
                 TransactionLog.Add(
                     new LogDetails
@@ -569,7 +567,7 @@ namespace EventsManagementSystem
 
                 e.NumberOfTicketsAvaliable += b.NumberOfTicketsToBuy;
 
-                DeleteBooking(b);
+                Bookings.Remove(b.BookingCode);
 
                 TransactionLog.Add(
                     new LogDetails
@@ -586,14 +584,6 @@ namespace EventsManagementSystem
             }
         }
 
-        public static void AddBooking(BookingDetails b)
-        {
-            Bookings.Add(b.BookingCode, b);
-        }
-        public static void DeleteBooking(BookingDetails b)
-        {
-            Bookings.Remove(b.BookingCode);
-        }
         private static BookingDetails GetBooking(int bookingCode)
         {
             try
@@ -671,21 +661,21 @@ namespace EventsManagementSystem
                     Console.WriteLine($"Date:\t{t.DateOfTransaction}");
                     Console.WriteLine($"Type:\t{t.Action}");
 
-                    switch (t.Action)
+                    switch (t.Action.ToLower())
                     {
-                        case "Add":
+                        case "add":
                             Console.WriteLine("\t" + t.Details + ";");
                             break;
-                        case "Update":
+                        case "update":
                             Console.WriteLine("\t" + t.Details + ";");
                             break;
-                        case "Delete":
+                        case "delete":
                             Console.WriteLine("\t" + t.Details + ";");
                             break;
-                        case "Book":
+                        case "book":
                             Console.WriteLine("\t" + t.Details + ";");
                             break;
-                        case "Cancel":
+                        case "cancel":
                             Console.WriteLine("\t" + t.Details + ";");
                             break;
                     }

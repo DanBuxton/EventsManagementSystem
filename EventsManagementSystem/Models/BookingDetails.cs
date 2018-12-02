@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventsManagementSystem.Models
 {
@@ -28,10 +24,7 @@ namespace EventsManagementSystem.Models
         {
             get => pricePerTicket;
 
-            set
-            {
-                if (value > 0) pricePerTicket = value;
-            }
+            set => pricePerTicket = (value > 0 ? value : pricePerTicket);
         }
         private double pricePerTicket = 5.99;
 

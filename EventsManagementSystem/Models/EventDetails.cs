@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventsManagementSystem.Models
 {
@@ -68,7 +64,7 @@ namespace EventsManagementSystem.Models
         public override string ToString()
         {
             return string.Format("Id: {0:d}; Name: {1:s}; Tickets: {2:N0} at {3:c}, {4:N0} left; {5:s}", EventCode,
-                Name, NumberOfTickets, pricePerTicket, numberOfTicketsAvaliable, DateAdded.ToString("HH:mm dd/MM/yy"));
+                Name, NumberOfTickets, pricePerTicket, numberOfTicketsAvaliable, DateAdded.ToString("dd/MM (HH:mm)"));
         }
     }
 }
