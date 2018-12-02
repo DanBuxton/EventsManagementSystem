@@ -20,12 +20,7 @@ namespace EventsManagementSystem.Models
         public int NumberOfTicketsToBuy { get => numberOfTicketsToBuy; set => numberOfTicketsToBuy = value; }
         private int numberOfTicketsToBuy = 0;
         
-        public double PricePerTicket
-        {
-            get => pricePerTicket;
-
-            set => pricePerTicket = (value > 0 ? value : pricePerTicket);
-        }
+        public double PricePerTicket { get => pricePerTicket; set => pricePerTicket = (value > 0 ? value : pricePerTicket); }
         private double pricePerTicket = 5.99;
 
         public double Price { get { return numberOfTicketsToBuy * pricePerTicket; } }

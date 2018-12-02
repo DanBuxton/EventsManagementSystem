@@ -3,3 +3,8 @@ Update\Id: 1234; Name: Hackathon - Stoke; Tickets: 246 at £16.98, 246 left; 11:
 Book\Event: 1234; Booking ref: 1000; Tickets: 16\636793469285711249
 Book\Event: 1234; Booking ref: 1001; Tickets: 200\636793483871038848
 Book\Event: 1234; Booking ref: 1002; Tickets: 30\636793484149270891
+Cancel\Code: 1002; Tickets: 30\636793733431037609
+Cancel\Code: 1001; Tickets: 200\636793733463147142
+Cancel\Code: 1000; Tickets: 16\636793733496339446
+Book\Event: 1234; Booking ref: 1003; Tickets: 1\636793733963298375
+Book\Event: 1234; Booking ref: 1004; Tickets: 222\636793734154849925

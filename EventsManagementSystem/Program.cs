@@ -85,11 +85,11 @@ namespace EventsManagementSystem
         private static FileInfo dataFile;
         private static FileStream fs;
 
-        private static readonly int delayInMilli = 5000;
+        private static readonly int delayInMilli = 3500;
 
         private static void LoadData()
         {
-            StreamReader sr;
+            StreamReader sr = null;
 
             // Events
             try
@@ -124,14 +124,17 @@ namespace EventsManagementSystem
                         Thread.Sleep(delayInMilli);
                     }
                 }
-
-                sr.Close();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Error: {0}", e.Message);
 
                 Thread.Sleep(delayInMilli);
+            }
+            finally
+            {
+                if (sr != null)
+                    sr.Close();
             }
 
             // Bookings
@@ -167,8 +170,6 @@ namespace EventsManagementSystem
                         Thread.Sleep(delayInMilli);
                     }
                 }
-
-                sr.Close();
             }
             catch (Exception e)
             {
@@ -176,7 +177,11 @@ namespace EventsManagementSystem
 
                 Thread.Sleep(delayInMilli);
             }
-
+            finally
+            {
+                if (sr != null)
+                    sr.Close();
+            }
 
             // Log
             try
@@ -207,8 +212,6 @@ namespace EventsManagementSystem
                         Thread.Sleep(delayInMilli);
                     }
                 }
-
-                sr.Close();
             }
             catch (Exception e)
             {
@@ -216,10 +219,16 @@ namespace EventsManagementSystem
 
                 Thread.Sleep(delayInMilli);
             }
+            finally
+            {
+                if (sr != null)
+                    sr.Close();
+            }
         }
+
         private static void SaveData()
         {
-            StreamWriter sw;
+            StreamWriter sw = null;
 
             // Events
             try
@@ -233,14 +242,17 @@ namespace EventsManagementSystem
                     sw.WriteLine("{0:d}{7}{1:s}{7}{2:d}{7}{3}{7}{4:d}{7}{5}{7}{6}", e.EventCode, e.Name, e.NumberOfTickets,
                         e.PricePerTicket, e.NumberOfTicketsAvaliable, e.DateAdded.Ticks, e.DateUpdated.Ticks, separator);
                 }
-
-                sw.Close();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Event Error: {0:s}", e.Message);
 
                 Thread.Sleep(delayInMilli);
+            }
+            finally
+            {
+                if (sw != null)
+                    sw.Close();
             }
 
             // Bookings
@@ -257,14 +269,17 @@ namespace EventsManagementSystem
                     sw.WriteLine("{0:d}{7}{1}{7}{2}{7}{3}{7}{4}{7}{5}{7}{6}", b.BookingCode, b.EventCode,
                         b.CustomerName, b.CustomerAddress, b.PricePerTicket, b.NumberOfTicketsToBuy, b.DateAdded.Ticks, separator);
                 }
-
-                sw.Close();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Booking Error: {0}", e.Message);
 
                 Thread.Sleep(delayInMilli);
+            }
+            finally
+            {
+                if (sw != null)
+                    sw.Close();
             }
 
             // Log
@@ -278,14 +293,17 @@ namespace EventsManagementSystem
                 {
                     sw.WriteLine("{0:s}{3}{1:s}{3}{2}", l.Action, l.Details, l.DateOfTransaction.Ticks, separator);
                 }
-
-                sw.Close();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Log Error: {0}", e.Message);
 
                 Thread.Sleep(delayInMilli);
+            }
+            finally
+            {
+                if (sw != null)
+                    sw.Close();
             }
         }
         #endregion
@@ -586,15 +604,18 @@ namespace EventsManagementSystem
 
         private static BookingDetails GetBooking(int bookingCode)
         {
+            BookingDetails b = null;
+
             try
             {
-
-                return Bookings[bookingCode];
+                b = Bookings[bookingCode];
             }
             catch (Exception)
             {
-                return null;
+                b = null;
             }
+
+            return b;
         }
 
         private static BookingDetails[] BookingsForEvent(int eventCode)
@@ -635,7 +656,7 @@ namespace EventsManagementSystem
                             Console.Write("\t\tCustomer name: " + bookings[b].CustomerName + Environment.NewLine);
                             Console.Write("\t\tAddress: " + bookings[b].CustomerAddress + Environment.NewLine);
                             Console.Write("\t\tNumber of tickets: " + bookings[b].NumberOfTicketsToBuy + Environment.NewLine);
-                            Console.Write("\t\tPrice: {0:c}" + Environment.NewLine, bookings[i].Price);
+                            Console.Write("\t\tPrice: {0:c}" + Environment.NewLine, bookings[b].Price);
                         }
                     }
                     else
