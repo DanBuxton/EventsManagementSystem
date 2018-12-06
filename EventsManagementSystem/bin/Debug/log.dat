@@ -8,3 +8,7 @@ Cancel\Code: 1001; Tickets: 200\636793733463147142
 Cancel\Code: 1000; Tickets: 16\636793733496339446
 Book\Event: 1234; Booking ref: 1003; Tickets: 1\636793733963298375
 Book\Event: 1234; Booking ref: 1004; Tickets: 222\636793734154849925
+Cancel\Code: 1004; Tickets: 222\636797059861820513
+Book\Event: 1234; Booking ref: 1005; Tickets: 245\636797070768854512
+Cancel\Code: 1003; Tickets: 1\636797071255181507
+Book\Event: 1234; Booking ref: 1006; Tickets: 1\636797071496674519

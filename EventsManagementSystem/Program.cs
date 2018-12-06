@@ -11,9 +11,9 @@ namespace EventsManagementSystem
     public class Program
     {
         #region Collections
-        private static List<EventDetails> Events { get; set; } = new List<EventDetails>();
-        private static SortedDictionary<int, BookingDetails> Bookings { get; set; } = new SortedDictionary<int, BookingDetails>();
-        private static List<LogDetails> TransactionLog { get; set; } = new List<LogDetails>();
+        static List<EventDetails> Events { get; set; } = new List<EventDetails>();
+        static SortedDictionary<int, BookingDetails> Bookings { get; set; } = new SortedDictionary<int, BookingDetails>();
+        static List<LogDetails> TransactionLog { get; set; } = new List<LogDetails>();
         #endregion
 
         public static void Main(string[] args)
@@ -89,6 +89,59 @@ namespace EventsManagementSystem
 
         private static void LoadData()
         {
+            #region CreateFilesIfNeeded
+            // Events
+            try
+            {
+                dataFile = new FileInfo(eventFilename);
+
+                if (!dataFile.Exists)
+                {
+                    fs = dataFile.Create();
+
+                    fs.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+
+            // Bookings
+            try
+            {
+                dataFile = new FileInfo(bookingsFilename);
+
+                if (!dataFile.Exists)
+                {
+                    fs = dataFile.Create();
+
+                    fs.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+
+            // Logs
+            try
+            {
+                dataFile = new FileInfo(transactionsFilename);
+
+                if (!dataFile.Exists)
+                {
+                    fs = dataFile.Create();
+
+                    fs.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+            #endregion
+
             StreamReader sr = null;
 
             // Events
@@ -170,6 +223,8 @@ namespace EventsManagementSystem
                         Thread.Sleep(delayInMilli);
                     }
                 }
+
+                BookingDetails.prevCode = Bookings.Last().Key + 1;
             }
             catch (Exception e)
             {
@@ -675,12 +730,14 @@ namespace EventsManagementSystem
         {
             if (TransactionLog.Count > 0)
             {
+                Console.WriteLine("Transactions ({0:d})", TransactionLog.Count);
+
                 for (int i = 0; i < TransactionLog.Count; i++)
                 {
                     LogDetails t = TransactionLog[i] as LogDetails;
 
-                    Console.WriteLine($"Date:\t{t.DateOfTransaction}");
-                    Console.WriteLine($"Type:\t{t.Action}");
+                    Console.WriteLine($"\tDate:\t{t.DateOfTransaction}");
+                    Console.WriteLine($"\tType:\t{t.Action}");
 
                     switch (t.Action.ToLower())
                     {
@@ -697,7 +754,7 @@ namespace EventsManagementSystem
                             Console.WriteLine("\t" + t.Details + ";");
                             break;
                         case "cancel":
-                            Console.WriteLine("\t" + t.Details + ";");
+                            Console.WriteLine("\t\t" + t.Details + ";");
                             break;
                     }
                     Console.WriteLine();
@@ -739,7 +796,7 @@ namespace EventsManagementSystem
                     opt = int.Parse(Console.ReadLine()); // String never null (ArgumentNullException). 
                     dataOK = true;
                 }
-                catch (ArgumentNullException e) // Nothing entered - not needed as ReadLine is never null. (very rare). 
+                catch (ArgumentNullException e) // Nothing entered - ReadLine is rarely null. 
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("ERROR: " + e.Message);

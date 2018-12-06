@@ -6,7 +6,7 @@ namespace EventsManagementSystem.Models
     {
         public int BookingCode { get; protected internal set; } = prevCode++;
         //public int BookingCode { get => bookingCode; set => bookingCode = (value > 999 && value < 10000 ? value : bookingCode); }
-        private static int prevCode = 1000;
+        protected internal static int prevCode = 1000;
 
         public int EventCode { get => eventCode; set => eventCode = ((value > 999) && (value < 10000) ? value : eventCode); }
         private int eventCode = 1000;
@@ -14,7 +14,7 @@ namespace EventsManagementSystem.Models
         public string CustomerName { get => customerName; set => customerName = (value.Length >= 4 ? value : customerName); }
         private string customerName = "???";
 
-        public string CustomerAddress { get => customerAddress; set => customerAddress = (value.Length >= 10 ? value : customerAddress); }
+        public string CustomerAddress { get => customerAddress; set => customerAddress = (value.Length >= 8 ? value : customerAddress); }
         private string customerAddress = "???";
 
         public int NumberOfTicketsToBuy { get => numberOfTicketsToBuy; set => numberOfTicketsToBuy = value; }
