@@ -91,8 +91,7 @@ namespace EventsManagementSystem
         {
             #region CreateFilesIfNeeded
             // Events
-            try
-            {
+            
                 dataFile = new FileInfo(eventFilename);
 
                 if (!dataFile.Exists)
@@ -101,11 +100,6 @@ namespace EventsManagementSystem
 
                     fs.Close();
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: " + e.Message);
-            }
 
             // Bookings
             try
@@ -224,7 +218,7 @@ namespace EventsManagementSystem
                     }
                 }
 
-                BookingDetails.prevCode = Bookings.Last().Key + 1;
+                BookingDetails.prevCode = (Bookings.Count > 0 ? Bookings.Last().Key + 1 : BookingDetails.prevCode);
             }
             catch (Exception e)
             {
