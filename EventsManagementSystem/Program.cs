@@ -34,25 +34,32 @@ namespace EventsManagementSystem
 
             const int EXIT = 8;
 
-            int choice = DisplayMenu();
+            int choice = Menu();
 
             while (choice != EXIT)
             {
+                Console.Clear();
+
                 switch (choice)
                 {
                     case ADD_EVENT:
+                        DisplayMenu();
                         AddAnEvent();
                         break;
                     case UPDATE_EVENT:
+                        DisplayMenu();
                         UpdateAnEvent();
                         break;
                     case DELETE_EVENT:
+                        DisplayMenu();
                         DeleteAnEvent();
                         break;
                     case BOOK_TICKET:
+                        DisplayMenu();
                         BookTickets();
                         break;
                     case CANCEL_BOOKING:
+                        DisplayMenu();
                         CancelBooking();
                         break;
                     case LIST_EVENTS:
@@ -69,7 +76,7 @@ namespace EventsManagementSystem
                 Console.WriteLine("\nPress any key to continue");
                 Console.ReadKey();
 
-                choice = DisplayMenu();
+                choice = Menu();
             }
 
             // Save data stores to file.
@@ -91,15 +98,15 @@ namespace EventsManagementSystem
         {
             #region CreateFilesIfNeeded
             // Events
-            
-                dataFile = new FileInfo(eventFilename);
 
-                if (!dataFile.Exists)
-                {
-                    fs = dataFile.Create();
+            dataFile = new FileInfo(eventFilename);
 
-                    fs.Close();
-                }
+            if (!dataFile.Exists)
+            {
+                fs = dataFile.Create();
+
+                fs.Close();
+            }
 
             // Bookings
             try
@@ -382,7 +389,7 @@ namespace EventsManagementSystem
             Console.Write($"{str} name: ");
             name = Console.ReadLine();
 
-            while ((name.Length <= minLength) || (name.Length >= maxLength))
+            while ((name.Length < minLength) || (name.Length > maxLength))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Must be between {minLength} and {maxLength} characters long");
@@ -573,7 +580,7 @@ namespace EventsManagementSystem
                 while (numOfTickets > e.NumberOfTicketsAvaliable)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"There is only {e.NumberOfTicketsAvaliable} ticket{(e.NumberOfTicketsAvaliable > 1 ? "s" : "")} remaining");
+                    Console.WriteLine($"There are only {e.NumberOfTicketsAvaliable} ticket{(e.NumberOfTicketsAvaliable > 1 ? "s" : "")} remaining");
                     Console.ForegroundColor = ConsoleColor.Gray;
 
                     ReadNumberOfTickets(out numOfTickets);
@@ -593,6 +600,7 @@ namespace EventsManagementSystem
 
                 Console.WriteLine();
                 Console.WriteLine("Booking ref: " + b.BookingCode);
+                Console.WriteLine("Price: " + b.Price);
 
                 Bookings.Add(b.BookingCode, b);
 
@@ -678,8 +686,6 @@ namespace EventsManagementSystem
         #region Display
         public static void DisplayAllEvents()
         {
-            Console.WriteLine();
-
             if (Events.Count > 0)
             {
                 Console.WriteLine("Event(s):");
@@ -761,21 +767,9 @@ namespace EventsManagementSystem
         }
         #endregion
 
-        public static int DisplayMenu()
+        private static int Menu()
         {
-            Console.Clear();
-
-            Console.WriteLine("\n1\t- Add an event");
-            Console.WriteLine("2\t- Update an event");
-            Console.WriteLine("3\t- Delete an event\n");
-
-            Console.WriteLine("4\t- Book tickets");
-            Console.WriteLine("5\t- Cancel booking\n");
-
-            Console.WriteLine("6\t- Display all events");
-            Console.WriteLine("7\t- Display all TransactionLog\n");
-
-            Console.WriteLine("8\t- Exit");
+            DisplayMenu();
 
             bool dataOK;
             int opt = -1;
@@ -784,7 +778,6 @@ namespace EventsManagementSystem
             {
                 try
                 {
-                    Console.WriteLine();
                     Console.Write("choice > ");
 
                     opt = int.Parse(Console.ReadLine()); // String never null (ArgumentNullException). 
@@ -817,6 +810,23 @@ namespace EventsManagementSystem
             } while (!dataOK);
 
             return opt;
+        }
+
+        private static void DisplayMenu()
+        {
+            Console.Clear();
+
+            Console.WriteLine("1\t- Add an event");
+            Console.WriteLine("2\t- Update an event");
+            Console.WriteLine("3\t- Delete an event\n");
+
+            Console.WriteLine("4\t- Book tickets");
+            Console.WriteLine("5\t- Cancel booking\n");
+
+            Console.WriteLine("6\t- Display all events");
+            Console.WriteLine("7\t- Display all TransactionLog\n");
+
+            Console.WriteLine("8\t- Exit\n");
         }
     }
 }

@@ -56,7 +56,7 @@ namespace EventsManagementSystem.Models
         }
         private int numberOfTicketsAvaliable = 0;
 
-        public DateTime DateAdded { protected internal set; get; } = DateTime.Now;
+        public DateTime DateAdded { get; set; } = DateTime.Now;
 
         public DateTime DateUpdated { get { return dateUpdated; } set { if (value > DateAdded) dateUpdated = value; } }
         private DateTime dateUpdated;
