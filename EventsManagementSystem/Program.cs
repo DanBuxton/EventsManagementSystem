@@ -97,15 +97,22 @@ namespace EventsManagementSystem
         private static void LoadData()
         {
             #region CreateFilesIfNeeded
+
             // Events
-
-            dataFile = new FileInfo(eventFilename);
-
-            if (!dataFile.Exists)
+            try
             {
-                fs = dataFile.Create();
+                dataFile = new FileInfo(eventFilename);
 
-                fs.Close();
+                if (!dataFile.Exists)
+                {
+                    fs = dataFile.Create();
+
+                    fs.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
             }
 
             // Bookings
