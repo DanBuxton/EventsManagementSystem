@@ -70,6 +70,7 @@ namespace EventsManagementSystem
                         break;
                     default:
                         Console.WriteLine("Not an option");
+                        //Console.WriteLine(new DateTime(636823443212789182).AddHours(13).Ticks);
                         break;
                 }
 
@@ -96,7 +97,7 @@ namespace EventsManagementSystem
 
         private static void LoadData()
         {
-            #region CreateFilesIfNeeded
+            StreamReader sr = null;
 
             // Events
             try
@@ -108,6 +109,53 @@ namespace EventsManagementSystem
                     fs = dataFile.Create();
 
                     fs.Close();
+                }
+                else
+                {
+                    try
+                    {
+                        dataFile = new FileInfo(eventFilename);
+                        fs = dataFile.OpenRead();
+                        sr = new StreamReader(fs);
+
+                        while (!sr.EndOfStream)
+                        {
+                            try
+                            {
+                                string[] ev = sr.ReadLine().Split(separator);
+
+                                EventDetails e = new EventDetails
+                                {
+                                    EventCode = int.Parse(ev[0]),
+                                    Name = ev[1],
+                                    NumberOfTickets = int.Parse(ev[2]),
+                                    PricePerTicket = double.Parse(ev[3]),
+                                    NumberOfTicketsAvaliable = int.Parse(ev[4]),
+                                    DateAdded = new DateTime(Convert.ToInt64(ev[5])),
+                                    DateUpdated = new DateTime(Convert.ToInt64(ev[6]))
+                                };
+
+                                Events.Add(e);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Error: {0}", e.Message);
+
+                                Thread.Sleep(delayInMilli);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: {0}", e.Message);
+
+                        Thread.Sleep(delayInMilli);
+                    }
+                    finally
+                    {
+                        if (sr != null)
+                            sr.Close();
+                    }
                 }
             }
             catch (Exception e)
@@ -125,6 +173,56 @@ namespace EventsManagementSystem
                     fs = dataFile.Create();
 
                     fs.Close();
+                }
+                else
+                {
+                    try
+                    {
+                        dataFile = new FileInfo(bookingsFilename);
+                        fs = dataFile.OpenRead();
+                        sr = new StreamReader(fs);
+
+                        while (!sr.EndOfStream)
+                        {
+                            try
+                            {
+                                string[] ev = sr.ReadLine().Split(separator);
+
+                                BookingDetails b = new BookingDetails
+                                {
+                                    BookingCode = int.Parse(ev[0]),
+                                    EventCode = int.Parse(ev[1]),
+                                    CustomerName = ev[2],
+                                    CustomerAddress = ev[3],
+                                    PricePerTicket = double.Parse(ev[4]),
+                                    NumberOfTicketsToBuy = int.Parse(ev[5]),
+                                    DateAdded = new DateTime(Convert.ToInt64(ev[6]))
+                                };
+
+                                Bookings.Add(b.BookingCode, b);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Error: {0}", e.Message);
+
+                                Thread.Sleep(delayInMilli);
+                            }
+                        }
+
+                        BookingDetails.prevCode = (Bookings.Count > 0 ? Bookings.Last().Key + 1 : BookingDetails.prevCode);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: {0}", e.Message);
+
+                        Thread.Sleep(delayInMilli);
+                    }
+                    finally
+                    {
+                        if (sr != null)
+                            sr.Close();
+                    }
+
                 }
             }
             catch (Exception e)
@@ -143,149 +241,53 @@ namespace EventsManagementSystem
 
                     fs.Close();
                 }
+                else
+                {
+                    try
+                    {
+                        dataFile = new FileInfo(transactionsFilename);
+                        fs = dataFile.OpenRead();
+                        sr = new StreamReader(fs);
+
+                        while (!sr.EndOfStream)
+                        {
+                            try
+                            {
+                                string[] l = sr.ReadLine().Split(separator);
+
+                                LogDetails t = new LogDetails
+                                {
+                                    Action = l[0],
+                                    Details = l[1],
+                                    DateOfTransaction = new DateTime(Convert.ToInt64(l[2]))
+                                };
+
+                                TransactionLog.Add(t);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Error: {0}", e.Message);
+
+                                Thread.Sleep(delayInMilli);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: {0}", e.Message);
+
+                        Thread.Sleep(delayInMilli);
+                    }
+                    finally
+                    {
+                        if (sr != null)
+                            sr.Close();
+                    }
+                }
             }
             catch (Exception e)
             {
                 Console.WriteLine("Error: " + e.Message);
-            }
-            #endregion
-
-            StreamReader sr = null;
-
-            // Events
-            try
-            {
-                dataFile = new FileInfo(eventFilename);
-                fs = dataFile.OpenRead();
-                sr = new StreamReader(fs);
-
-                while (!sr.EndOfStream)
-                {
-                    try
-                    {
-                        string[] ev = sr.ReadLine().Split(separator);
-
-                        EventDetails e = new EventDetails
-                        {
-                            EventCode = int.Parse(ev[0]),
-                            Name = ev[1],
-                            NumberOfTickets = int.Parse(ev[2]),
-                            PricePerTicket = double.Parse(ev[3]),
-                            NumberOfTicketsAvaliable = int.Parse(ev[4]),
-                            DateAdded = new DateTime(Convert.ToInt64(ev[5])),
-                            DateUpdated = new DateTime(Convert.ToInt64(ev[6]))
-                        };
-
-                        Events.Add(e);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error: {0}", e.Message);
-
-                        Thread.Sleep(delayInMilli);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: {0}", e.Message);
-
-                Thread.Sleep(delayInMilli);
-            }
-            finally
-            {
-                if (sr != null)
-                    sr.Close();
-            }
-
-            // Bookings
-            try
-            {
-                dataFile = new FileInfo(bookingsFilename);
-                fs = dataFile.OpenRead();
-                sr = new StreamReader(fs);
-
-                while (!sr.EndOfStream)
-                {
-                    try
-                    {
-                        string[] ev = sr.ReadLine().Split(separator);
-
-                        BookingDetails b = new BookingDetails
-                        {
-                            BookingCode = int.Parse(ev[0]),
-                            EventCode = int.Parse(ev[1]),
-                            CustomerName = ev[2],
-                            CustomerAddress = ev[3],
-                            PricePerTicket = double.Parse(ev[4]),
-                            NumberOfTicketsToBuy = int.Parse(ev[5]),
-                            DateAdded = new DateTime(Convert.ToInt64(ev[6]))
-                        };
-
-                        Bookings.Add(b.BookingCode, b);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error: {0}", e.Message);
-
-                        Thread.Sleep(delayInMilli);
-                    }
-                }
-
-                BookingDetails.prevCode = (Bookings.Count > 0 ? Bookings.Last().Key + 1 : BookingDetails.prevCode);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: {0}", e.Message);
-
-                Thread.Sleep(delayInMilli);
-            }
-            finally
-            {
-                if (sr != null)
-                    sr.Close();
-            }
-
-            // Log
-            try
-            {
-                dataFile = new FileInfo(transactionsFilename);
-                fs = dataFile.OpenRead();
-                sr = new StreamReader(fs);
-
-                while (!sr.EndOfStream)
-                {
-                    try
-                    {
-                        string[] l = sr.ReadLine().Split(separator);
-
-                        LogDetails t = new LogDetails
-                        {
-                            Action = l[0],
-                            Details = l[1],
-                            DateOfTransaction = new DateTime(Convert.ToInt64(l[2]))
-                        };
-
-                        TransactionLog.Add(t);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error: {0}", e.Message);
-
-                        Thread.Sleep(delayInMilli);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: {0}", e.Message);
-
-                Thread.Sleep(delayInMilli);
-            }
-            finally
-            {
-                if (sr != null)
-                    sr.Close();
             }
         }
 
@@ -391,13 +393,15 @@ namespace EventsManagementSystem
 
             id = code;
         }
-        private static void ReadName(string str, out string name, int maxLength /*= 40*/, int minLength = 4)
+        private static void ReadName(string str, out string name, int maxLength /*= 40*/, int minLength = 5)
         {
             Console.Write($"{str} name: ");
             name = Console.ReadLine();
 
             while ((name.Length < minLength) || (name.Length > maxLength))
             {
+                if (name == "")
+                    Console.WriteLine("Can't be empty");
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Must be between {minLength} and {maxLength} characters long");
                 Console.ForegroundColor = ConsoleColor.Gray;
@@ -574,10 +578,10 @@ namespace EventsManagementSystem
         public static void BookTickets()
         {
             ReadCode("Event", out int eCode);
-            ReadName(str: "Customer", name: out string cName, maxLength: 50);
+            ReadName(str: "Customer", name: out string cName, maxLength: 50, minLength: 4);
 
             Console.Write("Customer address: ");
-            string cAddress = Console.ReadLine();
+            ReadName(str: "Address", name: out string cAddress, maxLength: 50, minLength: 9);
 
             ReadNumberOfTickets(out int numOfTickets);
             FindAnEvent(eCode, out EventDetails e);

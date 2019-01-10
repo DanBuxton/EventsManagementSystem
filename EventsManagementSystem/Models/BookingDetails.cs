@@ -23,8 +23,8 @@ namespace EventsManagementSystem.Models
         public double PricePerTicket { get => pricePerTicket; set => pricePerTicket = (value > 0 ? value : pricePerTicket); }
         private double pricePerTicket = 5.99;
 
-        public double Price { get { return numberOfTicketsToBuy * pricePerTicket; } }
-        
+        public double Price => numberOfTicketsToBuy * pricePerTicket;
+
         public DateTime DateAdded { get; set; } = DateTime.Now;
 
         public override string ToString()
