@@ -2,7 +2,7 @@
 
 namespace EventsManagementSystem.Models
 {
-    public class EventDetails
+    public sealed class EventDetails
     {
         public int EventCode
         {

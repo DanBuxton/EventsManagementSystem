@@ -2,10 +2,9 @@
 
 namespace EventsManagementSystem.Models
 {
-    public class BookingDetails
+    public sealed class BookingDetails
     {
         public int BookingCode { get; set; } = prevCode++;
-        //public int BookingCode { get => bookingCode; set => bookingCode = (value > 999 && value < 10000 ? value : bookingCode); }
         public static int prevCode = 1000;
 
         public int EventCode { get => eventCode; set => eventCode = ((value > 999) && (value < 10000) ? value : eventCode); }
@@ -17,19 +16,17 @@ namespace EventsManagementSystem.Models
         public string CustomerAddress { get => customerAddress; set => customerAddress = (value.Length >= 8 ? value : customerAddress); }
         private string customerAddress = "???";
 
-        public int NumberOfTicketsToBuy { get => numberOfTicketsToBuy; set => numberOfTicketsToBuy = value; }
+        public int NumberOfTicketsToBuy { get => numberOfTicketsToBuy; set => numberOfTicketsToBuy = (value > 0 ? value : 1); }
         private int numberOfTicketsToBuy = 0;
         
         public double PricePerTicket { get => pricePerTicket; set => pricePerTicket = (value > 0 ? value : pricePerTicket); }
         private double pricePerTicket = 5.99;
 
-        public double Price => numberOfTicketsToBuy * pricePerTicket;
-
-        public DateTime DateAdded { get; set; } = DateTime.Now;
+        public double TotalPriceOfTickets => (numberOfTicketsToBuy > 0 ? numberOfTicketsToBuy * pricePerTicket : 0);
 
         public override string ToString()
         {
-            return string.Format("Code: {0:d}; Name: {1:s}; Address: {2:s} Tickets: {3:N0}({4:c2})", BookingCode, customerName, customerAddress, numberOfTicketsToBuy, Price);
+            return string.Format("Code: {0:d}; Name: {1:s}; Address: {2:s} Tickets: {3:N0}({4:c2})", BookingCode, customerName, customerAddress, numberOfTicketsToBuy, TotalPriceOfTickets);
         }
     }
 }
